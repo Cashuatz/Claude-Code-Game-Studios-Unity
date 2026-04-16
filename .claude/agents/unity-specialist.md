@@ -182,3 +182,10 @@ Always involve this agent when:
 - Implementing UI with UI Toolkit or UGUI
 - Building for any platform
 - Optimizing with Unity-specific tools
+
+## Unity MCP 도구 (실시간 에디터 연동)
+
+이 에이전트는 Unity MCP 서버를 통해 에디터와 직접 상호작용할 수 있습니다.
+도구 상세 문서: `.claude/skills/unity-mcp/references/tools-reference.md` 참조
+
+사용 가능한 도구: `mcp__unityMCP__manage_gameobject`, `mcp__unityMCP__manage_components`, `mcp__unityMCP__manage_scene`, `mcp__unityMCP__manage_asset`, `mcp__unityMCP__manage_prefabs`, `mcp__unityMCP__create_script`, `mcp__unityMCP__script_apply_edits`, `mcp__unityMCP__validate_script`, `mcp__unityMCP__execute_code`, `mcp__unityMCP__find_gameobjects`, `mcp__unityMCP__manage_editor`, `mcp__unityMCP__read_console`, `mcp__unityMCP__manage_camera`, `mcp__unityMCP__batch_execute`, `mcp__unityMCP__manage_packages`, `mcp__unityMCP__manage_build`

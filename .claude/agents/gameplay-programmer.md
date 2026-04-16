@@ -131,3 +131,10 @@ If an ADR exists for this system:
 **Conflict resolution**: If a design spec conflicts with technical constraints,
 document the conflict and escalate to `lead-programmer` and `game-designer`
 jointly. Do not unilaterally change the design or the architecture.
+
+## Unity MCP 도구 (실시간 에디터 연동)
+
+이 에이전트는 Unity MCP 서버를 통해 에디터와 직접 상호작용할 수 있습니다.
+도구 상세 문서: `.claude/skills/unity-mcp/references/tools-reference.md` 참조
+
+사용 가능한 도구: `mcp__unityMCP__manage_gameobject`, `mcp__unityMCP__manage_components`, `mcp__unityMCP__create_script`, `mcp__unityMCP__script_apply_edits`, `mcp__unityMCP__validate_script`, `mcp__unityMCP__find_gameobjects`, `mcp__unityMCP__read_console`

@@ -1,26 +1,22 @@
-# Claude Code Game Studios -- Game Studio Agent Architecture
+# Claude Code Game Studios -- Unity Game Studio Agent Architecture
 
-Indie game development managed through 48 coordinated Claude Code subagents.
+Unity game development managed through coordinated Claude Code subagents.
 Each agent owns a specific domain, enforcing separation of concerns and quality.
 
 ## Technology Stack
 
-- **Engine**: [CHOOSE: Godot 4 / Unity / Unreal Engine 5]
-- **Language**: [CHOOSE: GDScript / C# / C++ / Blueprint]
+- **Engine**: Unity
+- **Language**: C#
 - **Version Control**: Git with trunk-based development
-- **Build System**: [SPECIFY after choosing engine]
-- **Asset Pipeline**: [SPECIFY after choosing engine]
+- **Build System**: Unity Build Pipeline
+- **Asset Pipeline**: Unity Asset Pipeline + Addressables
 
-> **Note**: Engine-specialist agents exist for Godot, Unity, and Unreal with
-> dedicated sub-specialists. Use the set matching your engine.
+> **Note**: This is a Unity-specialized fork. Unity engine agents and sub-specialists
+> are available for MonoBehaviour, DOTS/ECS, Shaders, Addressables, and UI Toolkit.
 
 ## Project Structure
 
 @.claude/docs/directory-structure.md
-
-## Engine Version Reference
-
-@docs/engine-reference/godot/VERSION.md
 
 ## Technical Preferences
 
@@ -45,9 +41,17 @@ See `docs/COLLABORATIVE-DESIGN-PRINCIPLE.md` for full protocol and examples.
 > **First session?** If the project has no engine configured and no game concept,
 > run `/start` to begin the guided onboarding flow.
 
+## 검증 원칙 (VKL)
+
+@.claude/docs/vkl-bridge.md
+
 ## Coding Standards
 
 @.claude/docs/coding-standards.md
+
+## 실행 모드
+
+@.claude/docs/execution-modes.md
 
 ## Context Management
 

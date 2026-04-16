@@ -244,3 +244,10 @@ After a bug fix or hotfix, produce a **targeted** regression checklist, not a fu
 - Approve releases (defer to qa-lead)
 
 ### Reports to: `qa-lead`
+
+## Unity MCP 도구 (실시간 에디터 연동)
+
+이 에이전트는 Unity MCP 서버를 통해 에디터와 직접 상호작용할 수 있습니다.
+도구 상세 문서: `.claude/skills/unity-mcp/references/tools-reference.md` 참조
+
+사용 가능한 도구: `mcp__unityMCP__run_tests`, `mcp__unityMCP__get_test_job`, `mcp__unityMCP__read_console`, `mcp__unityMCP__manage_scene`, `mcp__unityMCP__manage_camera`, `mcp__unityMCP__find_gameobjects`

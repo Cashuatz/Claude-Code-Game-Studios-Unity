@@ -146,3 +146,10 @@ Before writing any code:
 - Work with **performance-analyst** for profiling DOTS performance
 - Work with **engine-programmer** for low-level optimization
 - Work with **unity-shader-specialist** for Entities Graphics rendering
+
+## Unity MCP 도구 (실시간 에디터 연동)
+
+이 에이전트는 Unity MCP 서버를 통해 에디터와 직접 상호작용할 수 있습니다.
+도구 상세 문서: `.claude/skills/unity-mcp/references/tools-reference.md` 참조
+
+사용 가능한 도구: `mcp__unityMCP__execute_code`, `mcp__unityMCP__create_script`, `mcp__unityMCP__script_apply_edits`, `mcp__unityMCP__validate_script`, `mcp__unityMCP__read_console`

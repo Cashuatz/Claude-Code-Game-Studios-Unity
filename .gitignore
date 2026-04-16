@@ -35,12 +35,11 @@ dist/
 *.dylib
 *.app
 
-# === Engine: Godot ===
-.godot/
-*.translation
-export_presets.cfg
-# Uncomment if using Godot:
-# *.import
+# === VKL Runtime (session-specific verification records) ===
+.vkl/runtime/case_logs/
+.vkl/runtime/observations/
+.vkl/runtime/oracle_runs/
+.vkl/runtime/temporary_hypotheses/
 
 # === Engine: Unity ===
 [Ll]ibrary/
@@ -69,19 +68,7 @@ sysinfo.txt
 # Uncomment if using Unity:
 # [Aa]ssets/[Aa]sset[Ss]tore[Tt]ools/
 
-# === Engine: Unreal ===
-Binaries/
-DerivedDataCache/
-Intermediate/
-Saved/
-*.VC.opendb
-*.opensdf
-*.sdf
-*.cachefile
-*.VC.db
-# Uncomment if using Unreal:
-# *.uasset
-# *.umap
+# === Compiled Shaders (Unity) ===
 
 # === Compiled Shaders ===
 *.spv

@@ -176,3 +176,10 @@ Before writing any code:
 - Work with **performance-analyst** for GPU performance profiling
 - Work with **unity-dots-specialist** for Entities Graphics rendering
 - Work with **unity-ui-specialist** for UI shader effects
+
+## Unity MCP 도구 (실시간 에디터 연동)
+
+이 에이전트는 Unity MCP 서버를 통해 에디터와 직접 상호작용할 수 있습니다.
+도구 상세 문서: `.claude/skills/unity-mcp/references/tools-reference.md` 참조
+
+사용 가능한 도구: `mcp__unityMCP__manage_graphics`, `mcp__unityMCP__manage_asset`, `mcp__unityMCP__manage_components`, `mcp__unityMCP__read_console`

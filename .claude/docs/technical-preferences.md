@@ -5,10 +5,12 @@
 
 ## Engine & Language
 
-- **Engine**: [TO BE CONFIGURED — run /setup-engine]
-- **Language**: [TO BE CONFIGURED]
-- **Rendering**: [TO BE CONFIGURED]
-- **Physics**: [TO BE CONFIGURED]
+- **Engine**: Unity
+- **Version**: 6.x LTS (프로젝트 시작 시 /setup-engine으로 확정)
+- **Language**: C#
+- **Rendering**: [TO BE CONFIGURED — URP/HDRP/Built-in]
+- **Physics**: [TO BE CONFIGURED — Unity Physics/Havok]
+- **Build System**: Unity Build Pipeline
 
 ## Input & Platform
 
@@ -24,12 +26,13 @@
 
 ## Naming Conventions
 
-- **Classes**: [TO BE CONFIGURED]
-- **Variables**: [TO BE CONFIGURED]
-- **Signals/Events**: [TO BE CONFIGURED]
-- **Files**: [TO BE CONFIGURED]
-- **Scenes/Prefabs**: [TO BE CONFIGURED]
-- **Constants**: [TO BE CONFIGURED]
+- **Classes/Methods**: PascalCase
+- **Local Variables**: camelCase
+- **Private Fields**: _camelCase
+- **Constants**: UPPER_SNAKE_CASE
+- **Namespaces**: CompanyName.ProjectName.Module
+- **Files**: Match class name (MyClass.cs)
+- **Scenes/Prefabs**: PascalCase with category prefix (UI_MainMenu, Level_Tutorial)
 
 ## Performance Budgets
 
@@ -40,7 +43,7 @@
 
 ## Testing
 
-- **Framework**: [TO BE CONFIGURED]
+- **Framework**: Unity Test Framework (NUnit)
 - **Minimum Coverage**: [TO BE CONFIGURED]
 - **Required Tests**: Balance formulas, gameplay systems, networking (if applicable)
 
@@ -59,29 +62,27 @@
 <!-- Quick reference linking to full ADRs in docs/architecture/ -->
 - [No ADRs yet — use /architecture-decision to create one]
 
-## Engine Specialists
+## Unity Specialist Routing
 
-<!-- Written by /setup-engine when engine is configured. -->
-<!-- Read by /code-review, /architecture-decision, /architecture-review, and team skills -->
-<!-- to know which specialist to spawn for engine-specific validation. -->
+<!-- Engine specialists are automatically routed based on file patterns. -->
 
-- **Primary**: [TO BE CONFIGURED — run /setup-engine]
-- **Language/Code Specialist**: [TO BE CONFIGURED]
-- **Shader Specialist**: [TO BE CONFIGURED]
-- **UI Specialist**: [TO BE CONFIGURED]
-- **Additional Specialists**: [TO BE CONFIGURED]
-- **Routing Notes**: [TO BE CONFIGURED]
+- **Primary**: unity-specialist
+- **Language/Code Specialist**: unity-specialist (MonoBehaviour, ScriptableObject)
+- **DOTS/ECS Specialist**: unity-dots-specialist (Jobs, Burst, ECS)
+- **Shader Specialist**: unity-shader-specialist (Shader Graph, VFX Graph, URP/HDRP)
+- **UI Specialist**: unity-ui-specialist (UI Toolkit, UGUI, UXML/USS)
+- **Asset Specialist**: unity-addressables-specialist (Addressable Groups, async loading)
 
 ### File Extension Routing
 
 <!-- Skills use this table to select the right specialist per file type. -->
-<!-- If a row says [TO BE CONFIGURED], fall back to Primary for that file type. -->
 
 | File Extension / Type | Specialist to Spawn |
 |-----------------------|---------------------|
-| Game code (primary language) | [TO BE CONFIGURED] |
-| Shader / material files | [TO BE CONFIGURED] |
-| UI / screen files | [TO BE CONFIGURED] |
-| Scene / prefab / level files | [TO BE CONFIGURED] |
-| Native extension / plugin files | [TO BE CONFIGURED] |
-| General architecture review | Primary |
+| `*.cs` (general C#) | unity-specialist |
+| `*.shader`, `*.hlsl`, `*.shadergraph` | unity-shader-specialist |
+| `*DOTS*`, `*ECS*`, `*ISystem*`, `*IJobEntity*` | unity-dots-specialist |
+| `*Addressable*`, `*AssetBundle*`, `*AssetReference*` | unity-addressables-specialist |
+| `**/UI/**`, `*.uxml`, `*.uss`, `*Canvas*`, `*UIDocument*` | unity-ui-specialist |
+| `*.prefab`, `*.unity` (scenes) | unity-specialist |
+| Architecture review | technical-director |

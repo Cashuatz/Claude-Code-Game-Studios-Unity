@@ -125,3 +125,29 @@ Coordinate multiple agents on a single feature area:
 | `/team-level` | level-designer + narrative-director + world-builder + art-director + systems-designer + qa-tester |
 | `/team-live-ops` | live-ops-designer + economy-designer + community-manager + analytics-engineer |
 | `/team-qa` | qa-lead + qa-tester + gameplay-programmer + producer |
+
+## 실행 모드 (OMC)
+
+| Command | Purpose |
+|---------|---------|
+| `/ralph` | 끝까지 완료 모드 — 모든 작업이 검증 완료될 때까지 지속 |
+| `/ultrawork` | 병렬 실행 모드 — 독립 작업을 동시에 실행 |
+| `/autopilot` | 자율 구현 모드 — 아이디어에서 검증된 코드까지 자동화 |
+| `/ultraqa` | QA 사이클링 — 빌드/테스트/수정을 목표 달성까지 반복 |
+
+## Unity 도구
+
+| Command | Purpose |
+|---------|---------|
+| `/unity-mcp` | Unity MCP 오퍼레이터 가이드 — 에디터 실시간 연동 |
+| `/compile-check` | C# 컴파일 검증 — asmdef → csproj 매핑 후 dotnet build |
+| `/editor-layout` | 에디터 윈도우 UI 디자인 가이드 |
+| `/codex` | Codex CLI 교차 검증 |
+| `/verify` | VKL 검증 루프 실행 — 체계적 검증 및 지식화 |
+
+## 유틸리티 (OMC)
+
+| Command | Purpose |
+|---------|---------|
+| `/learner` | 세션에서 재사용 가능한 스킬 추출 |
+| `/note` | 세션 간 지식 보존을 위한 노트 저장 |

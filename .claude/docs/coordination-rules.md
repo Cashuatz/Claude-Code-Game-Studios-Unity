@@ -71,3 +71,31 @@ When an orchestration skill spawns multiple independent agents:
 2. Collect all results before proceeding to dependent phases
 3. If any agent is BLOCKED, surface it immediately — do not silently skip
 4. Always produce a partial report if some agents complete and others block
+
+## OMC 보조 에이전트 라우팅
+
+| 작업 유형 | 에이전트 | 모델 | 사용 시점 |
+|-----------|---------|------|----------|
+| 빠른 코드 탐색 | omc-explore | haiku | 파일/패턴 검색, 코드베이스 정찰 |
+| 런타임 디버깅 | omc-debugger | sonnet | 버그 추적, 스택트레이스 분석, 빌드 에러 해결 |
+| 구현 검증 | omc-verifier | sonnet | 수락 기준 체크, 증거 기반 완료 검증 |
+| 교차 검증 | /codex | external | 중요 결정 2차 검증 (Codex CLI) |
+
+## MCP 도구 라우팅
+
+Unity MCP 도구는 다음 CCGS 에이전트가 사용할 수 있습니다:
+
+| MCP 도구 카테고리 | 사용 가능한 CCGS 에이전트 |
+|------------------|-------------------------|
+| manage_gameobject, manage_components | unity-specialist, gameplay-programmer |
+| manage_scene | unity-specialist, level-designer, qa-tester |
+| manage_script, validate_script | 모든 programmer 에이전트 |
+| manage_material, manage_shader | unity-shader-specialist, technical-artist |
+| manage_animation | gameplay-programmer, technical-artist |
+| manage_physics | gameplay-programmer, engine-programmer |
+| manage_ui | unity-ui-specialist, ui-programmer |
+| manage_build, manage_packages | engine-programmer, devops-engineer |
+| manage_camera | gameplay-programmer, level-designer |
+| manage_vfx | technical-artist |
+| run_tests, read_console | qa-tester, performance-analyst |
+| execute_code | 모든 에이전트 (범용) |

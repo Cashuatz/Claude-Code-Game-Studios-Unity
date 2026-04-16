@@ -51,24 +51,13 @@ domain lead) should delegate to specialists.
 | `live-ops-designer` | Live operations | Sonnet | Seasons, events, battle passes, retention, live economy |
 | `community-manager` | Community | Haiku | Patch notes, player feedback, crisis comms, community health |
 
-## Engine-Specific Agents (use the set matching your engine)
+## Unity Engine Agents
 
-### Engine Leads
+### Engine Lead
 
 | Agent | Engine | Model | When to Use |
 | ---- | ---- | ---- | ---- |
-| `unreal-specialist` | Unreal Engine 5 | Sonnet | Blueprint vs C++, GAS overview, UE subsystems, Unreal optimization |
 | `unity-specialist` | Unity | Sonnet | MonoBehaviour vs DOTS, Addressables, URP/HDRP, Unity optimization |
-| `godot-specialist` | Godot 4 | Sonnet | GDScript patterns, node/scene architecture, signals, Godot optimization |
-
-### Unreal Engine Sub-Specialists
-
-| Agent | Subsystem | Model | When to Use |
-| ---- | ---- | ---- | ---- |
-| `ue-gas-specialist` | Gameplay Ability System | Sonnet | Abilities, gameplay effects, attribute sets, tags, prediction |
-| `ue-blueprint-specialist` | Blueprint Architecture | Sonnet | BP/C++ boundary, graph standards, naming, BP optimization |
-| `ue-replication-specialist` | Networking/Replication | Sonnet | Property replication, RPCs, prediction, relevancy, bandwidth |
-| `ue-umg-specialist` | UMG/CommonUI | Sonnet | Widget hierarchy, data binding, CommonUI input, UI performance |
 
 ### Unity Sub-Specialists
 
@@ -79,10 +68,10 @@ domain lead) should delegate to specialists.
 | `unity-addressables-specialist` | Asset Management | Sonnet | Addressable groups, async loading, memory, content delivery |
 | `unity-ui-specialist` | UI Toolkit/UGUI | Sonnet | UI Toolkit, UXML/USS, UGUI Canvas, data binding, cross-platform input |
 
-### Godot Sub-Specialists
+## OMC 보조 에이전트 (실행 모드 지원)
 
-| Agent | Subsystem | Model | When to Use |
-| ---- | ---- | ---- | ---- |
-| `godot-gdscript-specialist` | GDScript | Sonnet | Static typing, design patterns, signals, coroutines, GDScript performance |
-| `godot-shader-specialist` | Shaders/Rendering | Sonnet | Godot shading language, visual shaders, particles, post-processing |
-| `godot-gdextension-specialist` | GDExtension | Sonnet | C++/Rust bindings, native performance, custom nodes, build systems |
+| Agent | Domain | Model | When to Use |
+|-------|--------|-------|-------------|
+| `omc-explore` | 코드 탐색 | Haiku | 빠른 파일/패턴 검색, 코드베이스 정찰 |
+| `omc-debugger` | 디버깅 | Sonnet | 런타임 버그 추적, 스택트레이스 분석, 빌드 에러 해결 |
+| `omc-verifier` | 검증 | Sonnet | 구현 결과 검증, 증거 기반 완료 체크, 수락 기준 확인 |

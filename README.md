@@ -1,18 +1,18 @@
 <p align="center">
-  <h1 align="center">Claude Code Game Studios</h1>
+  <h1 align="center">Claude Code Game Studios — Unity Fork</h1>
   <p align="center">
-    Turn a single Claude Code session into a full game development studio.
+    Unity 전용 게임 개발 스튜디오. 별도 Claude 셋업 없이 이 폴더 하나로 시작.
     <br />
-    49 agents. 72 skills. One coordinated AI team.
+    42 agents. 80+ skills. Unity MCP 연동. VKL 검증 체계.
   </p>
 </p>
 
 <p align="center">
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="MIT License"></a>
-  <a href=".claude/agents"><img src="https://img.shields.io/badge/agents-49-blueviolet" alt="49 Agents"></a>
-  <a href=".claude/skills"><img src="https://img.shields.io/badge/skills-72-green" alt="72 Skills"></a>
+  <a href=".claude/agents"><img src="https://img.shields.io/badge/agents-42-blueviolet" alt="42 Agents"></a>
+  <a href=".claude/skills"><img src="https://img.shields.io/badge/skills-80+-green" alt="80+ Skills"></a>
   <a href=".claude/hooks"><img src="https://img.shields.io/badge/hooks-12-orange" alt="12 Hooks"></a>
-  <a href=".claude/rules"><img src="https://img.shields.io/badge/rules-11-red" alt="11 Rules"></a>
+  <a href=".claude/rules"><img src="https://img.shields.io/badge/rules-12-red" alt="12 Rules"></a>
   <a href="https://docs.anthropic.com/en/docs/claude-code"><img src="https://img.shields.io/badge/built%20for-Claude%20Code-f5f5f5?logo=anthropic" alt="Built for Claude Code"></a>
   <a href="https://www.buymeacoffee.com/donchitos3"><img src="https://img.shields.io/badge/Buy%20Me%20a%20Coffee-Support%20this%20project-FFDD00?logo=buymeacoffee&logoColor=black" alt="Buy Me a Coffee"></a>
   <a href="https://github.com/sponsors/Donchitos"><img src="https://img.shields.io/badge/GitHub%20Sponsors-Support%20this%20project-ea4aaa?logo=githubsponsors&logoColor=white" alt="GitHub Sponsors"></a>
@@ -82,15 +82,25 @@ Tier 3 — Specialists (Sonnet/Haiku)
   live-ops-designer    community-manager
 ```
 
-### Engine Specialists
+### Unity Engine Specialists
 
-The template includes agent sets for all three major engines. Use the set that matches your project:
+이 포크는 Unity 전용입니다:
 
-| Engine | Lead Agent | Sub-Specialists |
-|--------|-----------|-----------------|
-| **Godot 4** | `godot-specialist` | GDScript, Shaders, GDExtension |
-| **Unity** | `unity-specialist` | DOTS/ECS, Shaders/VFX, Addressables, UI Toolkit |
-| **Unreal Engine 5** | `unreal-specialist` | GAS, Blueprints, Replication, UMG/CommonUI |
+| Agent | Subsystem |
+|-------|-----------|
+| `unity-specialist` | Unity 리드 — MonoBehaviour, DOTS, Addressables, URP/HDRP |
+| `unity-dots-specialist` | DOTS/ECS, Jobs, Burst |
+| `unity-shader-specialist` | Shader Graph, VFX Graph |
+| `unity-addressables-specialist` | Addressable Groups, async loading |
+| `unity-ui-specialist` | UI Toolkit, UGUI |
+
+### OMC 보조 에이전트
+
+| Agent | Purpose |
+|-------|---------|
+| `omc-explore` | 빠른 코드 탐색/패턴 검색 |
+| `omc-debugger` | 런타임 버그 추적, 빌드 에러 해결 |
+| `omc-verifier` | 증거 기반 구현 검증 |
 
 ## Slash Commands
 
@@ -131,6 +141,15 @@ Type `/` in Claude Code to access all 72 skills:
 
 **Team Orchestration** (coordinate multiple agents on a single feature)
 `/team-combat` `/team-narrative` `/team-ui` `/team-release` `/team-polish` `/team-audio` `/team-level` `/team-live-ops` `/team-qa`
+
+**실행 모드 (OMC)**
+`/ralph` (끝까지 완료) `/ultrawork` (병렬 실행) `/autopilot` (자율 구현) `/ultraqa` (QA 사이클링)
+
+**Unity 도구**
+`/unity-mcp` (에디터 연동) `/compile-check` (C# 컴파일 검증) `/editor-layout` (에디터 UI 가이드) `/codex` (교차 검증) `/verify` (VKL 검증 루프)
+
+**유틸리티 (OMC)**
+`/learner` (스킬 추출) `/note` (노트 저장)
 
 ## Getting Started
 
@@ -255,6 +274,39 @@ Coding standards are automatically enforced based on file location:
 | `tests/**` | Test naming, coverage requirements, fixture patterns |
 | `prototypes/**` | Relaxed standards, README required, hypothesis documented |
 
+## Unity Fork 고유 기능
+
+### Unity MCP 연동
+Unity Editor와 실시간 연동하여 게임오브젝트 생성/수정, 씬 관리, 스크립트 편집, 테스트 실행이 가능합니다.
+
+**설정 방법:**
+1. Unity 프로젝트에 MCP for Unity 패키지 설치
+2. Python MCP 서버 실행 (`http://localhost:8080/mcp`)
+3. `.mcp.json`에 서버가 이미 설정되어 있음 — Claude Code에서 바로 사용
+
+### 실행 모드 (OMC)
+CCGS 워크플로우를 보완하는 실행 모드:
+- `/ralph` — 모든 작업이 완료될 때까지 지속 실행
+- `/ultrawork` — 독립 작업을 병렬로 동시 실행
+- `/autopilot` — 아이디어에서 코드까지 전체 자동화
+- `/ultraqa` — 빌드/테스트/수정 반복 (최대 5사이클)
+
+### VKL 검증 체계
+AI 코드 생성의 의미적 오류(misfill)를 방지하는 체계적 검증 프레임워크.
+`.vkl/` 디렉토리에 독립적으로 유지되며, CCGS 스킬과 연동됩니다.
+- `/verify` — 전체 VKL 검증 루프 실행
+- Oracle 기반 판정, 실패 분류(FT-XX), Metamorphic Relations 테스트
+
+### 기존 CCGS와의 차이점
+| 항목 | 원본 CCGS | Unity Fork |
+|------|----------|------------|
+| 엔진 | Godot/Unity/Unreal 선택 | Unity 전용 |
+| 에이전트 | 49개 | 42개 (39 CCGS + 3 보조) |
+| MCP 연동 | 없음 | Unity MCP 39개 도구 |
+| 실행 모드 | 없음 | ralph, ultrawork, autopilot, ultraqa |
+| 검증 체계 | 없음 | VKL (살아있는 지식 체계) |
+| 교차 검증 | 없음 | Codex CLI 연동 |
+
 ## Design Philosophy
 
 This template is grounded in professional game development practices:
@@ -274,7 +326,7 @@ This is a **template**, not a locked framework. Everything is meant to be custom
 - **Modify skills** — adjust workflows to match your team's process
 - **Add rules** — create new path-scoped rules for your project's directory structure
 - **Tune hooks** — adjust validation strictness, add new checks
-- **Pick your engine** — use the Godot, Unity, or Unreal agent set (or none)
+- **Engine is pre-configured** — Unity agents, MCP integration, and compile checks are ready to use
 - **Set review intensity** — `full` (all director gates), `lean` (phase gates only), or `solo` (none). Set during `/start` or edit `production/review-mode.txt`. Override per-run with `--review solo` on any skill.
 
 ## Platform Support

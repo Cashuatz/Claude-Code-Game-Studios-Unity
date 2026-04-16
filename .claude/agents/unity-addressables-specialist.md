@@ -163,3 +163,10 @@ handle.Completed += OnAssetLoaded;
 - Work with **devops-engineer** for CDN and content delivery pipeline
 - Work with **level-designer** for scene streaming boundaries
 - Work with **unity-ui-specialist** for UI asset loading patterns
+
+## Unity MCP 도구 (실시간 에디터 연동)
+
+이 에이전트는 Unity MCP 서버를 통해 에디터와 직접 상호작용할 수 있습니다.
+도구 상세 문서: `.claude/skills/unity-mcp/references/tools-reference.md` 참조
+
+사용 가능한 도구: `mcp__unityMCP__manage_asset`, `mcp__unityMCP__manage_packages`, `mcp__unityMCP__manage_build`, `mcp__unityMCP__read_console`

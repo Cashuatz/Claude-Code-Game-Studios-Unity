@@ -15,7 +15,8 @@
       "Bash(dir *)",
       "Bash(python -m json.tool*)",
       "Bash(python -m pytest*)",
-      "Bash(py -m pytest*)"
+      "Bash(py -m pytest*)",
+      "mcp__unityMCP__*"
     ],
     "deny": [
       "Bash(rm -rf *)",

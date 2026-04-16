@@ -30,23 +30,12 @@
     live-ops-designer       -- Seasons, events, battle passes, retention, live economy
     community-manager       -- Patch notes, player feedback, crisis comms
 
-  Engine Specialists (use the SET matching your engine):
-    unreal-specialist  -- UE5 lead: Blueprint/C++, GAS overview, UE subsystems
-      ue-gas-specialist         -- GAS: abilities, effects, attributes, tags, prediction
-      ue-blueprint-specialist   -- Blueprint: BP/C++ boundary, graph standards, optimization
-      ue-replication-specialist -- Networking: replication, RPCs, prediction, bandwidth
-      ue-umg-specialist         -- UI: UMG, CommonUI, widget hierarchy, data binding
-
+  Unity Engine Specialists:
     unity-specialist   -- Unity lead: MonoBehaviour/DOTS, Addressables, URP/HDRP
       unity-dots-specialist         -- DOTS/ECS: Jobs, Burst, hybrid renderer
       unity-shader-specialist       -- Shaders: Shader Graph, VFX Graph, SRP customization
       unity-addressables-specialist -- Assets: async loading, bundles, memory, CDN
       unity-ui-specialist           -- UI: UI Toolkit, UGUI, UXML/USS, data binding
-
-    godot-specialist   -- Godot 4 lead: GDScript, node/scene, signals, resources
-      godot-gdscript-specialist    -- GDScript: static typing, patterns, signals, performance
-      godot-shader-specialist      -- Shaders: Godot shading language, visual shaders, VFX
-      godot-gdextension-specialist -- Native: C++/Rust bindings, GDExtension, build systems
 ```
 
 ### Legend
@@ -82,8 +71,8 @@ art-dir = art-director
 | prototyper | (works independently, reports findings to producer and relevant leads) |
 | security-engineer | network-programmer (security review), lead-programmer (secure patterns) |
 | accessibility-specialist | ux-designer (accessible patterns), ui-programmer (implementation), qa-tester (a11y testing) |
-| [engine]-specialist | engine sub-specialists (delegates subsystem-specific work) |
-| [engine] sub-specialists | (advises all programmers on engine subsystem patterns and optimization) |
+| unity-specialist | unity sub-specialists (delegates subsystem-specific work) |
+| unity sub-specialists | (advises all programmers on Unity subsystem patterns and optimization) |
 | live-ops-designer | economy-designer (live economy), community-manager (event comms), analytics-engineer (engagement metrics) |
 | community-manager | (works with producer for approval, release-manager for patch note timing) |
 

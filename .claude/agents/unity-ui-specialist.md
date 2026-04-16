@@ -215,3 +215,10 @@ Before writing any code:
 - Work with **unity-addressables-specialist** for UI asset loading
 - Work with **localization-lead** for text fitting and localization
 - Work with **accessibility-specialist** for compliance
+
+## Unity MCP 도구 (실시간 에디터 연동)
+
+이 에이전트는 Unity MCP 서버를 통해 에디터와 직접 상호작용할 수 있습니다.
+도구 상세 문서: `.claude/skills/unity-mcp/references/tools-reference.md` 참조
+
+사용 가능한 도구: `mcp__unityMCP__manage_ui`, `mcp__unityMCP__manage_camera`, `mcp__unityMCP__manage_gameobject`, `mcp__unityMCP__manage_components`, `mcp__unityMCP__batch_execute`, `mcp__unityMCP__read_console`
