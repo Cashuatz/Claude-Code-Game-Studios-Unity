@@ -54,11 +54,18 @@
 
 ## 노출된 스킬·에이전트
 
-**Skills (11개)**: `proto-start`, `prototype`, `help`, `compile-check`, `smoke-check`, `brainstorm`, `codex`, `note`, `learner`, `editor-layout`, `unity-mcp`
+**Skills (12개)**: `proto-start`, `prototype`, `help`, `compile-check`, `smoke-check`, `brainstorm`, `codex`, `note`, `learner`, `editor-layout`, `unity-mcp`, `verify`
 
 **Agents (9개)**: `prototyper`, `unity-specialist`, `gameplay-programmer`, `ui-programmer`, `art-director`, `game-designer`, `omc-explore`, `omc-debugger`, `omc-verifier`
 
 나머지는 `.claude/skills/_hidden/`·`.claude/agents/_hidden/`에 이동되어 비활성화됨. `main` 브랜치에 전체 유지.
+
+## 검증 원칙 (VKL)
+
+Proto 브랜치에서도 **VKL(Validation-Knowledge-Loop) 검증 원칙은 유효**합니다.
+복잡한 판단·검증이 필요할 때 `/verify`를 호출하거나 아래 원칙을 따릅니다.
+
+@.claude/docs/vkl-bridge.md
 
 ## 코딩 스타일 (최소)
 
