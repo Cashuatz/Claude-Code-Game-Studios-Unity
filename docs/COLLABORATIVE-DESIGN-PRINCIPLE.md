@@ -1,6 +1,22 @@
 # Collaborative Design Principle
 
-**Last Updated:** 2026-02-13
+**Last Updated:** 2026-04-19
+
+---
+
+> ## ⚠️ Proto 브랜치 예외 (프로토타이핑 경량 모드)
+>
+> 이 문서의 **Question → Options → Decision → Draft → Approval** 루프는 `main` 브랜치의 정통 CCGS 워크플로 기준입니다.
+>
+> **Proto 브랜치에서는 기본 비활성화됩니다.** 프로토타이핑 사용자가 20시간 내 3분 빌드를 만들기 위해 승인 게이트의 마찰을 감당할 수 없기 때문입니다.
+>
+> Proto 브랜치 규칙:
+> - Claude는 **1줄 요약만 먼저 말하고 바로 파일을 씁니다** ("May I write?" 질문 생략)
+> - 사용자가 "잠깐"이라 말하면 즉시 멈춥니다
+> - **파괴적 명령(파일 삭제, `git reset --hard`, `main` 체크아웃)만** 여전히 확인합니다
+> - Git 커밋·푸시는 Claude가 **완전 대행**하며, 사용자에게 Git 개념을 노출하지 않습니다
+>
+> 자세한 규칙은 Proto 브랜치의 `CLAUDE.md` 참조.
 
 ---
 

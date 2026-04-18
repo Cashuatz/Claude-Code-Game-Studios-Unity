@@ -7,6 +7,23 @@
 # Exit on error for debugging (but don't fail the session)
 set +e
 
+# --- Proto 브랜치에서는 조용히 종료 (프로토타이핑 경량 모드) ---
+BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
+case "$BRANCH" in
+    Proto|Proto/*)
+        exit 0
+        ;;
+    claude/*)
+        # claude/* 워크트리 브랜치가 Proto에서 파생됐는지 확인
+        MERGE_BASE=$(git merge-base "$BRANCH" Proto 2>/dev/null)
+        PROTO_HEAD=$(git rev-parse Proto 2>/dev/null)
+        if [ -n "$MERGE_BASE" ] && [ "$MERGE_BASE" = "$PROTO_HEAD" ]; then
+            # Proto 기반 워크트리 → 조용히 종료
+            exit 0
+        fi
+        ;;
+esac
+
 echo "=== Checking for Documentation Gaps ==="
 
 # --- Check 0: Fresh project detection (suggests /start) ---

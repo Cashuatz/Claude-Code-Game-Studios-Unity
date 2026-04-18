@@ -4,10 +4,27 @@
 #
 # Input schema (SessionStart): No stdin input
 
+BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
+
+# --- Proto 브랜치: 프로토타이핑 경량 모드 환영 메시지만 출력 ---
+case "$BRANCH" in
+    Proto|Proto/*|claude/*)
+        # Proto나 Proto에서 파생된 claude/* 워크트리 브랜치면 경량 모드
+        if [ "$BRANCH" = "Proto" ] || [ "${BRANCH#Proto/}" != "$BRANCH" ]; then
+            echo "=== Proto 브랜치 — 프로토타이핑 경량 모드 (URP 3D) ==="
+            echo ""
+            echo "시작: /proto-start 입력 후 한 문장으로 아이디어 말하기"
+            echo "가이드: docs/PROTO-QUICKSTART.ko.md"
+            echo ""
+            echo "목표: 20시간 / 3분 플레이 빌드"
+            echo "==================================="
+            exit 0
+        fi
+        ;;
+esac
+
 echo "=== Claude Code Game Studios — Session Context ==="
 
-# Current branch
-BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
 if [ -n "$BRANCH" ]; then
     echo "Branch: $BRANCH"
 
