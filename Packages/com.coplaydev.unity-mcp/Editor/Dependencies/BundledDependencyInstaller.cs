@@ -71,6 +71,27 @@ namespace MCPForUnity.Editor.Dependencies
         private static Action<InstallResult> _provisioningCompleted;
 
         /// <summary>
+        /// Restore IsProvisioned / LastResult from persisted EditorPrefs so a
+        /// domain reload (which resets static fields) doesn't roll the Status
+        /// UI back to "pending". Must be called on the Unity main thread.
+        /// </summary>
+        public static void HydrateFromPersistedState()
+        {
+            if (IsProvisioned) return;
+
+            string persisted = EditorPrefs.GetString(InstalledVersionPref, string.Empty);
+            if (string.IsNullOrEmpty(persisted)) return;
+
+            // If the persisted version says we provisioned before AND the runtime
+            // binary still exists on disk, treat this load as already provisioned.
+            if (File.Exists(GetRuntimeUvPath()))
+            {
+                IsProvisioned = true;
+                LastResult = InstallResult.AlreadyInstalled;
+            }
+        }
+
+        /// <summary>
         /// Must be called from the Unity main thread. Resolves and caches the
         /// package root so the background phase can find the seed binary.
         /// </summary>

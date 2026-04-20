@@ -1,3 +1,4 @@
+using MCPForUnity.Editor.Constants;
 using MCPForUnity.Editor.Helpers;
 using UnityEditor;
 
@@ -16,6 +17,18 @@ namespace MCPForUnity.Editor.Dependencies
 
         static BundledDependencyBootstrap()
         {
+            // Always hydrate state so domain reloads don't show "pending" in
+            // the Status menu. Cheap — just reads EditorPrefs + File.Exists.
+            BundledDependencyInstaller.HydrateFromPersistedState();
+
+            // Default Auto-Start ON for fresh installs (no key yet). Users who
+            // explicitly toggle it off keep that preference — HasKey check only
+            // fires on the very first run.
+            if (!EditorPrefs.HasKey(EditorPrefKeys.AutoStartOnLoad))
+            {
+                EditorPrefs.SetBool(EditorPrefKeys.AutoStartOnLoad, true);
+            }
+
             if (SessionState.GetBool(SessionFlag, false)) return;
             SessionState.SetBool(SessionFlag, true);
 

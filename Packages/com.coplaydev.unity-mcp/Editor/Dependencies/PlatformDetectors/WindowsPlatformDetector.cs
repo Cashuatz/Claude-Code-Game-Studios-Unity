@@ -160,8 +160,27 @@ namespace MCPForUnity.Editor.Dependencies.PlatformDetectors
             try
             {
                 string augmentedPath = BuildAugmentedPath();
-                // Try to list installed python versions via uvx
-                if (!ExecPath.TryRun("uv", "python list", null, out string stdout, out string stderr, 5000, augmentedPath))
+
+                // Preferred: ask uv for the concrete interpreter path directly.
+                // `uv python find <ver>` prints a single absolute path on success;
+                // works across uv versions and avoids brittle `list` parsing.
+                foreach (string ver in new[] { "3.13", "3.12", "3.11", "3.10" })
+                {
+                    if (!ExecPath.TryRun("uv", $"python find {ver}", null, out string findOut, out _, 5000, augmentedPath))
+                        continue;
+
+                    string candidate = (findOut ?? string.Empty).Trim();
+                    if (!string.IsNullOrEmpty(candidate) && File.Exists(candidate) &&
+                        TryValidatePython(candidate, out version, out fullPath))
+                    {
+                        return true;
+                    }
+                }
+
+                // Fallback: parse `uv python list`. Output columns vary by uv
+                // version, so inspect every token on the line for a plausible
+                // python executable path.
+                if (!ExecPath.TryRun("uv", "python list", null, out string stdout, out _, 5000, augmentedPath))
                     return false;
 
                 var lines = stdout.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
@@ -169,17 +188,17 @@ namespace MCPForUnity.Editor.Dependencies.PlatformDetectors
                 {
                     if (line.Contains("<download available>")) continue;
 
-                    var parts = line.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-                    if (parts.Length >= 2)
+                    var parts = line.Split(new[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
+                    foreach (string part in parts)
                     {
-                        string potentialPath = parts[parts.Length - 1];
-                        if (File.Exists(potentialPath) &&
-                            (potentialPath.EndsWith("python.exe") || potentialPath.EndsWith("python3.exe")))
+                        if (!(part.EndsWith("python.exe", StringComparison.OrdinalIgnoreCase) ||
+                              part.EndsWith("python3.exe", StringComparison.OrdinalIgnoreCase)))
                         {
-                            if (TryValidatePython(potentialPath, out version, out fullPath))
-                            {
-                                return true;
-                            }
+                            continue;
+                        }
+                        if (File.Exists(part) && TryValidatePython(part, out version, out fullPath))
+                        {
+                            return true;
                         }
                     }
                 }
