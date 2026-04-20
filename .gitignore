@@ -35,6 +35,14 @@ dist/
 *.dylib
 *.app
 
+# === Bundled MCP Dependencies (uv seed binaries) ===
+# Editor~ is ignored by Unity's asset pipeline but MUST be tracked by git so
+# the bundled uv binaries ship with the package. Parent unignore first —
+# otherwise the global *~ pattern (Vim backup files) swallows Editor~ whole
+# and no deeper !exception can rescue it.
+!/Packages/com.coplaydev.unity-mcp/Editor~/
+!/Packages/com.coplaydev.unity-mcp/Editor~/**
+
 # === VKL Runtime (session-specific verification records) ===
 .vkl/runtime/case_logs/
 .vkl/runtime/observations/

@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using MCPForUnity.Editor.Constants;
+using MCPForUnity.Editor.Dependencies;
 using MCPForUnity.Editor.Helpers;
 using MCPForUnity.Editor.Services.Transport;
 using MCPForUnity.Editor.Windows;
@@ -55,12 +56,29 @@ namespace MCPForUnity.Editor.Services
                 // Don't auto-start if bridge is already running.
                 if (MCPServiceLocator.TransportManager.IsRunning(TransportMode.Http)) return;
 
+                // Wait until the bundled uv/Python provisioning finishes so we
+                // don't try to launch the server before its toolchain is ready.
+                if (!BundledDependencyInstaller.IsProvisioned)
+                {
+                    McpLog.Info("[HTTP Auto-Start] Waiting for bundled uv + Python provisioning…", always: false);
+                    BundledDependencyInstaller.ProvisioningCompleted += OnProvisioningCompleted;
+                    return;
+                }
+
                 _ = AutoStartAsync();
             }
             catch (Exception ex)
             {
                 McpLog.Debug($"[HTTP Auto-Start] Deferred check failed: {ex.Message}");
             }
+        }
+
+        private static void OnProvisioningCompleted(BundledDependencyInstaller.InstallResult result)
+        {
+            BundledDependencyInstaller.ProvisioningCompleted -= OnProvisioningCompleted;
+            McpLog.Info($"[HTTP Auto-Start] Provisioning finished ({result}); proceeding with auto-start.", always: false);
+            // Re-enter the normal auto-start path once the toolchain is ready.
+            EditorApplication.delayCall += OnEditorReady;
         }
 
         private static async Task AutoStartAsync()

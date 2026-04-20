@@ -257,6 +257,11 @@ namespace MCPForUnity.Editor.Dependencies.PlatformDetectors
 
             var additions = new List<string>();
 
+            // MCP for Unity bundled runtime — highest priority so the embedded uv
+            // beats any stale system install. Safe even if the directory does not
+            // yet exist (ExecPath.FindInPath silently skips missing entries).
+            additions.Add(BundledDependencyInstaller.GetRuntimeDir());
+
             // uv common installation paths
             if (!string.IsNullOrEmpty(localAppData))
                 additions.Add(Path.Combine(localAppData, "Programs", "uv"));

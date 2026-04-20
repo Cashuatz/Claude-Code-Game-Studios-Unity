@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using MCPForUnity.Editor.Constants;
+using MCPForUnity.Editor.Dependencies;
 using MCPForUnity.Editor.Helpers;
 using UnityEditor;
 using UnityEngine;
@@ -314,7 +315,15 @@ namespace MCPForUnity.Editor.Services
                 ? commandName + ".exe"
                 : commandName;
 
-            // Search PATH first
+            // MCP for Unity bundled runtime — checked before PATH so our
+            // embedded uv/uvx wins over any stale or partial system install.
+            string bundledRuntimeDir = BundledDependencyInstaller.GetRuntimeDir();
+            if (!string.IsNullOrEmpty(bundledRuntimeDir))
+            {
+                yield return Path.Combine(bundledRuntimeDir, exeName);
+            }
+
+            // Search PATH next
             string pathEnv = Environment.GetEnvironmentVariable("PATH");
             if (!string.IsNullOrEmpty(pathEnv))
             {
