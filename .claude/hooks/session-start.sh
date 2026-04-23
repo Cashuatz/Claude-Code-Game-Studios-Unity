@@ -17,6 +17,8 @@ case "$BRANCH" in
             echo "가이드: docs/PROTO-QUICKSTART.ko.md"
             echo ""
             echo "목표: 20시간 / 3분 플레이 빌드"
+            echo ""
+            echo "VKL: 검증 필요 시 /verify 호출 (원칙은 .claude/docs/vkl-bridge.md 로드됨)"
             echo "==================================="
             exit 0
         fi
@@ -87,6 +89,10 @@ if [ -f "$STATE_FILE" ]; then
     fi
     echo "=== END SESSION STATE PREVIEW ==="
 fi
+
+# --- VKL reminder ---
+echo ""
+echo "VKL: 검증 필요 시 /verify 호출 (원칙은 .claude/docs/vkl-bridge.md 로드됨)"
 
 echo "==================================="
 exit 0
