@@ -40,6 +40,54 @@ git branch --show-current
 
 ---
 
+## Phase 1.5: 장르 라우팅 (신규)
+
+수강생 한 문장을 `design/proto-modules/_genres-index.md` 의 **라우팅 룰** 로 매칭합니다.
+
+**매칭 후보 (3장르)**:
+
+| 장르 ID | 키워드 예시 | 질문지 |
+|---|---|---|
+| `turn3d` | "턴제", "블아", "블루아카이브", "JRPG", "쿼터뷰", "유닛 배치" | `design/proto-modules/_questionnaire-turn3d.md` |
+| `td` | "타워 디펜스", "TD", "방어", "명일방주", "엔드필드", "네트워크 연결", "선 자원" | `design/proto-modules/_questionnaire-td.md` |
+| `rail-shooter` | "건슈팅", "하우스 오브 더 데드", "온레일", "1인칭 슈팅", "엄폐", "불릿타임" | `design/proto-modules/_questionnaire-rail-shooter.md` |
+
+**라우팅 분기**:
+
+1. **명확한 매칭 1개** → 해당 `_questionnaire-<genre>.md` 로 즉시 진입. Phase 1.6 (질문지 진행) 수행.
+2. **후보 2개 이상 / 애매**:
+   > "만들고 싶은 게임이 다음 중 어느 쪽에 가까워요?
+   > (1) 여러 캐릭터 턴제 전투
+   > (2) 타워 짓고 방어
+   > (3) 1인칭 슈팅"
+   >
+   > 답변 후 해당 장르로 진입.
+3. **매칭 없음** → 기존 Phase 2~6 으로 **그대로 진행** (generic flow, WASD 컨트롤러).
+
+**중요**: 장르 라우팅은 어디까지나 _genres-index.md_ 의 키워드 표에 근거한다.
+키워드 표 밖의 추측으로 분기 금지.
+
+---
+
+## Phase 1.6: 질문지 진행 (장르 매칭 시만)
+
+해당 `_questionnaire-<genre>.md` 를 읽고 **Q1~Q8 순서대로 하나씩** 수강생에게 질문합니다.
+
+**진행 규칙** (질문지 "질문 제시 규칙" 섹션과 동일):
+- 한 번에 하나씩. 답 듣고 다음.
+- 평문 한국어 선택지, 기술 용어 금지.
+- "몰라" / "아무거나" → **Default** 자동 선택.
+- 선택지 밖 답 → Default + 1문장 메모.
+- Q1~Q8 완료 전 코드 작성 금지.
+
+**수집 완료 후**:
+- 답변 8개와 매칭된 활성 모듈 목록(`_catalog-<genre>.md` 의 "모듈 번들 매핑" 섹션 참조)을
+  `design/proto-concept.md` 에 기록 (Phase 2 에서 통합 작성).
+- 1줄 요약 후 Phase 2 로:
+  > "모두 수집됐어요. 컨셉 문서 정리할게요."
+
+---
+
 ## Phase 2: 컨셉 즉시 작성 (승인 없이)
 
 한 문장을 받아서 아래 10줄 템플릿을 채워 `design/proto-concept.md`에 **바로 씁니다**. 먼저 1줄 요약만 말하고 Write.
@@ -48,12 +96,25 @@ git branch --show-current
 
 템플릿: `docs/templates/proto-game-concept.md` 참조. 필드:
 - 게임 제목 (한 문장에서 추출, 없으면 Claude가 제안)
-- 장르
+- 장르 (Phase 1.5 라우팅 결과: `turn3d` / `td` / `rail-shooter` / `generic`)
 - 한 문장 요약
 - 3분 플레이 시나리오 (시간대별 3~4줄)
 - 조작 (키보드 키 매핑 3~4개)
 - 성공 조건 (플레이어가 뭘 하면 이김)
 - 참고 게임 (유명 게임 1~2개)
+- **[장르 매칭 시 추가]** 질문지 답변 매트릭스 (Q1~Q8):
+  ```
+  ## Questionnaire Answers (<genre>)
+
+  | # | 질문 | 선택 | 활성 모듈 |
+  |---|---|---|---|
+  | Q1 | <질문 요약> | <A/B/C/Default> | <모듈 ID 목록> |
+  | Q2 | ... | ... | ... |
+  | ... |
+  ```
+- **[장르 매칭 시 추가]** 설치 계획:
+  - 참조 카탈로그: `design/proto-modules/_catalog-<genre>.md` Phase 착수 순서.
+  - 각 Phase 의 활성 모듈 번들 목록 복사.
 
 **파일 쓴 후**: "컨셉 정리했어요. 바로 시작용 스크립트 만들게요." 한 줄만 말하고 다음 Phase로.
 
