@@ -13,7 +13,7 @@
 
 | ID | 장르 | 카탈로그 | 질문지 | 컨벤션 | 상태 |
 |---|---|---|---|---|---|
-| `turn3d` | 블아류 쿼터뷰 유사턴제 3D 액션 | `_catalog-turn3d.md` ✅ | `_questionnaire-turn3d.md` ❌ | `_conventions.md` (공통) | **카탈로그 완료, 질문지 미작성** |
+| `turn3d` | 블아류 쿼터뷰 유사턴제 3D 액션 | `_catalog-turn3d.md` ✅ | `_questionnaire-turn3d.md` ✅ | `_conventions.md` (공통) | **3종 세트 완료** (전용 conventions 없음) |
 | `td` | 타워 디펜스 (네트워크 허브 연결형, 엔드필드류) | `_catalog-td.md` ✅ | `_questionnaire-td.md` ✅ | `_conventions-td.md` ✅ + 공통 | **3종 세트 완료** |
 | `rail-shooter` | 1인칭 건슈팅 액션 (하우스 오브 더 데드류 온-레일 슈터) | `_catalog-rail-shooter.md` ✅ | `_questionnaire-rail-shooter.md` ✅ | `_conventions-rail-shooter.md` ✅ + 공통 | **3종 세트 완료** |
 | (TBD) | 추가 장르는 본 표 확장 | — | — | — | — |
@@ -168,6 +168,10 @@ Claude 는 수강생에게 1회 **장르 재설명 요청**:
   - `pp-horror` — 녹색/청록 색조 + 가장자리 어둠 + 필름 그레인 (Q7-A 좀비)
   - `pp-cyber` — 네온 톤 + 스캔라인 + 크로매틱 어버레이션 (Q7-B 로봇)
   - `pp-weird` — 색상 왜곡 + 낮은 대비 + 블러 (Q7-D 크리처)
+- **레시피 ID** (turn3d 테마 전용):
+  - `pp-pastel` — 밝은 채도 + 소프트 블룸 + 따뜻한 화이트 밸런스 (Q8-A 파스텔 애니)
+  - `pp-dark` — 낮은 채도 + 진한 비네트 + 차가운 그림자 (Q8-B 다크 판타지)
+  - `pp-retro` — 픽셀화 / 다운샘플 + 제한 팔레트 + 디더링 (Q8-C 레트로)
 - **스킬 훅**: `/proto-postfx --recipe pp-<variant>` 가 프로파일/패스/컨트롤러 설치.
 
 ### 공유 VFX Hard Rules (신규 HR 후보)
