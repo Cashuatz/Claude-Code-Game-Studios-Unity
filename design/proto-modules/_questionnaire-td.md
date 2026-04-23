@@ -77,7 +77,7 @@
 | 선택지 | 수강생 표현 | Active Modules | Active HR | Default Assets |
 |---|---|---|---|---|
 | **A (시간 버티기)** | "몇 분 버티면" | `td-game-rule-timed`, `td-hud-timer` | — | `GameRule_Timed_3min.asset` |
-| **B (전멸)** | "N마리 처치" | `td-game-rule-killcount`, `td-hud-killcount` | — | `GameRule_Kill_50.asset` |
+| **B (전멸)** | "N마리 처치" | `td-game-rule-killcount`, `td-hud-killcount`, `td-wave-spawner` | — | `GameRule_Kill_50.asset` |
 | **C (기지 방어)** | "기지 체력 0 패배" | `td-game-rule-coredefense`, `td-core-hp`, `td-hud-corehp` | — | `GameRule_Core_100hp.asset` |
 | **A+C** | "시간 버티고 기지 지키기" | A + C | — | 두 에셋 모두 |
 | **B+C** | "다 처치하고 기지 지키기" | B + C | — | 두 에셋 모두 |
@@ -189,6 +189,4 @@
 
 - **Q3 C (가변 카메라)** 선택 시 모드 전환 트리거 방식 — 버튼? 자동? 현재는 **버튼** 기본값 가정.
 - **Q5 C (킬 보상)** 선택 시 보상량 밸런싱 기본값 — `5 per kill` 로 고정했으나 레벨별 조정 필요.
-- **Q4 B (전멸)** 에서 "다 처치"가 웨이브 종료와 어떻게 맞물리는지 — 현재는 "모든 웨이브 완주 + 전부 처치" 로 가정.
-
-이 3개는 `_catalog-td.md` 의 각 모듈 문서에 TBD 로 명시.
+- ~~**Q4 B (전멸)** 에서 "다 처치"가 웨이브 종료와 어떻게 맞물리는지~~ → **결정됨 (2026-04-23)**: 게임 완결성 원칙. 승리 판정은 `AllWavesSpawned && AliveCount==0 && Kills>=Target` AND 조건. 조건 1·2 만족 + 킬 미달 시 패배. 사살만 카운트, 누수는 제외. 세부 규격은 [`td-game-rule-killcount.md`](./td-game-rule-killcount.md) 참조.

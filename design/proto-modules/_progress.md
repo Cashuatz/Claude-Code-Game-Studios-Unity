@@ -179,7 +179,7 @@ Phase 4 는 현재도 generic WASD 컨트롤러만 작성됨.
 
 ### 6.4 미결 사항 (강사 검토 대기)
 
-- TD Q4 "전멸(kill)" 의 "모든 웨이브 종료" 판정 로직 정확화
+- ~~TD Q4 "전멸(kill)" 의 "모든 웨이브 종료" 판정 로직 정확화~~ → **결정 (2026-04-23)**: 게임 완결성 우선. `AllWavesSpawned && AliveCount==0 && Kills>=Target` AND 조건. 사살만 카운트, 누수 제외. `td-game-rule-killcount.md` 에 반영.
 - Rail Shooter 보스전 페이즈 전환 / 약점 부위 로직
 - turn3d Q2-C Rhythm 의 BGM 비트 메타데이터 스펙
 - 각 장르 "아트 팩" 의 실제 에셋 출처 결정 (Unity Asset Store / 자체 제작 / 프리셋)
