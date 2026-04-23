@@ -37,6 +37,8 @@ namespace Proto.Testing
             {
                 _rig.ModeChanged += HandleModeChanged;
                 _rig.TransitionCompleted += HandleTransitionCompleted;
+                _rig.ShotStarted += HandleShotStarted;
+                _rig.ShotCompleted += HandleShotCompleted;
             }
             _lastGrounded = _agent != null && _agent.IsGrounded;
         }
@@ -52,6 +54,8 @@ namespace Proto.Testing
             {
                 _rig.ModeChanged -= HandleModeChanged;
                 _rig.TransitionCompleted -= HandleTransitionCompleted;
+                _rig.ShotStarted -= HandleShotStarted;
+                _rig.ShotCompleted -= HandleShotCompleted;
             }
         }
 
@@ -93,6 +97,16 @@ namespace Proto.Testing
         private void HandleTransitionCompleted(CameraMode mode)
         {
             ProtoTestBus.Emit(ProtoEventKind.TransitionCompleted, mode.ToString());
+        }
+
+        private void HandleShotStarted()
+        {
+            ProtoTestBus.Emit(ProtoEventKind.Action, "ShotStarted");
+        }
+
+        private void HandleShotCompleted()
+        {
+            ProtoTestBus.Emit(ProtoEventKind.Action, "ShotCompleted");
         }
     }
 }

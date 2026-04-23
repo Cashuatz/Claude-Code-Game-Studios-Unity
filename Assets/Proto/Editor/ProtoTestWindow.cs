@@ -1,5 +1,6 @@
 #if UNITY_EDITOR
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -180,10 +181,22 @@ namespace Proto.EditorTools
             foldCam.Add(MakeButton("Request SideView",    () => RigOp(r => r.RequestMode(CameraMode.SideView),    "Mode=SideView")));
             body.Add(foldCam);
 
+            // Camera Shots (궁극기/컷신 스타일 오버라이드)
+            var foldShot = new Foldout { text = "Camera Shots", value = true };
+            StyleFoldout(foldShot, "CINE");
+            foldShot.Add(MakeButton("Play OrbitShot (1.5s, 1 rev)", () =>
+                RigOp(r => r.PlayShot(new OrbitShot(duration: 1.5f, radius: 5f, height: 2f, revolutions: 1f, fov: 50f)),
+                      "Shot=Orbit(1.5s,1rev)")));
+            foldShot.Add(MakeButton("Play OrbitShot (3s, 2 rev slow)", () =>
+                RigOp(r => r.PlayShot(new OrbitShot(duration: 3f, radius: 4f, height: 1.5f, revolutions: 2f, fov: 45f)),
+                      "Shot=Orbit(3s,2rev)")));
+            foldShot.Add(MakeButton("Stop Current Shot", () => RigOp(r => r.StopShot(), "Shot=Stop")));
+            body.Add(foldShot);
+
             // Smoke Test
             var foldSmoke = new Foldout { text = "Smoke Test", value = true };
             StyleFoldout(foldSmoke, "SUITE");
-            foldSmoke.Add(MakeButton("Run Smoke: TP → Move → Mode Cycle", RunSmokeTest));
+            foldSmoke.Add(MakeButton("Run Smoke: TP → Move → Modes → Shot", RunSmokeTest));
             body.Add(foldSmoke);
 
             return section;
@@ -479,29 +492,38 @@ namespace Proto.EditorTools
                 return;
             }
 
-            ProtoTestBus.Emit(ProtoEventKind.Action, "SMOKE: start");
-            _agent.Teleport(Vector3.zero);
-            ProtoTestBus.Emit(ProtoEventKind.Action, "SMOKE: teleport(0,0,0)");
-            _agent.MoveBy(new Vector3(1f, 0f, 0f));
-            ProtoTestBus.Emit(ProtoEventKind.Action, "SMOKE: moveBy(+1,0,0)");
-            _rig.RequestMode(CameraMode.QuarterView);
-            ProtoTestBus.Emit(ProtoEventKind.Action, "SMOKE: mode=QuarterView (transition starts)");
+            ProtoTestRunner.Instance.Run(SmokeSequence(_agent, _rig));
+        }
 
-            // 딜레이 콜로 다음 단계
-            EditorApplication.delayCall += () =>
-            {
-                if (_rig != null) _rig.RequestMode(CameraMode.SideView);
-                ProtoTestBus.Emit(ProtoEventKind.Action, "SMOKE: mode=SideView (delayed)");
-            };
-            EditorApplication.delayCall += () =>
-            {
-                if (_rig != null) _rig.RequestMode(CameraMode.BackView);
-                ProtoTestBus.Emit(ProtoEventKind.Action, "SMOKE: mode=BackView (delayed)");
-            };
-            EditorApplication.delayCall += () =>
-            {
-                ProtoTestBus.Emit(ProtoEventKind.Action, "SMOKE: end");
-            };
+        private static IEnumerator SmokeSequence(MovementAgent agent, CameraRig rig)
+        {
+            ProtoTestBus.Emit(ProtoEventKind.Action, "SMOKE: start");
+
+            agent.Teleport(Vector3.zero);
+            ProtoTestBus.Emit(ProtoEventKind.Action, "SMOKE: teleport(0,0,0)");
+            yield return new WaitForSeconds(0.3f);
+
+            agent.MoveBy(new Vector3(1f, 0f, 0f));
+            ProtoTestBus.Emit(ProtoEventKind.Action, "SMOKE: moveBy(+1,0,0)");
+            yield return new WaitForSeconds(0.3f);
+
+            rig.RequestMode(CameraMode.QuarterView);
+            ProtoTestBus.Emit(ProtoEventKind.Action, "SMOKE: mode=QuarterView");
+            yield return new WaitForSeconds(1.0f);
+
+            rig.RequestMode(CameraMode.SideView);
+            ProtoTestBus.Emit(ProtoEventKind.Action, "SMOKE: mode=SideView");
+            yield return new WaitForSeconds(1.0f);
+
+            rig.RequestMode(CameraMode.BackView);
+            ProtoTestBus.Emit(ProtoEventKind.Action, "SMOKE: mode=BackView");
+            yield return new WaitForSeconds(1.0f);
+
+            rig.PlayShot(new OrbitShot(duration: 2f, radius: 5f, height: 2f, revolutions: 1f, fov: 50f));
+            ProtoTestBus.Emit(ProtoEventKind.Action, "SMOKE: PlayShot Orbit(2s,1rev)");
+            yield return new WaitForSeconds(2.3f);
+
+            ProtoTestBus.Emit(ProtoEventKind.Action, "SMOKE: end");
         }
 
         // ===== polling =====

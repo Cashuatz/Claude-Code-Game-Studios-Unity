@@ -149,3 +149,40 @@ UnityEngine.Debug.Assert(rig.CurrentMode == Proto.Camera.CameraMode.QuarterView)
 - OR-COMPILE-01 (컴파일 에러 0)
 - OR-RUNTIME-01 (런타임 에러 0)
 - OR-VISUAL-01 (스크린샷 존재)
+
+## 8. 후속 확장 — Camera Shot (궁극기·컷신)
+
+정적 3모드 전환만으로는 "궁극기 발동 → 캐릭터 중심 카메라워크 → 복귀" 시나리오를
+표현할 수 없음. 2026-04-24 세션에서 Shot 개념 추가.
+
+### 설계
+
+- `IShotProfile` — 일정 시간 동안 `GetPosition / GetRotation / GetFov` 을 반환하는 프로파일.
+- `ICameraRig.PlayShot(IShotProfile)` — 모드 프레임 대신 쇼트 프로파일이 매 프레임
+  카메라를 구동. 완료 시 현 모드 프레임으로 기본 TransitionProfile 로 복귀.
+- `ICameraRig.StopShot()` — 강제 종료 + 복귀.
+- 재생 중 `RequestMode` 호출 시 쇼트 즉시 취소 후 모드 전환 (사용자 입력 우선).
+- HR-4 유지: 카메라 조작은 `RequestMode` · `PlayShot` · `StopShot` 3개 API 만 경유.
+
+### 기본 제공 쇼트
+
+- `OrbitShot(duration, radius, height, revolutions, startAngleDeg, fov)` — 앵커 주위
+  공전. 궁극기 발동 연출의 표준형.
+
+### 향후 확장 후보 (실 구현은 TBD)
+
+- `PullInShot` — 현재 위치에서 앵커 가까이 급속 줌인.
+- `CrashZoomShot` — 거의 앵커 얼굴까지 붙은 뒤 경미한 셰이크.
+- `CinematicPathShot` — AnimationCurve 기반 경로 궤도.
+- `ShotSequence` — 여러 IShotProfile 을 연속 실행하는 컴포지트.
+
+### TimelineCue 연결
+
+`TimelineCue` (optional dep) 가 시간 축에서 `PlayShot(ultimateShot)` 을 호출하는 것이
+표준 패턴. 각 궁극기 Ability 가 ShotProfile 을 자기 SO 에 참조.
+
+### VKL 검증 (쇼트 재생 시)
+
+- 재생 중 `IsPlayingShot == true`, `IsTransitioning == false` 유지.
+- 종료 직후 `IsPlayingShot == false`, `IsTransitioning == true` (복귀 전환 시작).
+- `ShotStarted` → (Duration 경과) → `ShotCompleted` 이벤트 순서 보장.

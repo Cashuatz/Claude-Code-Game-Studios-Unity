@@ -37,11 +37,17 @@ namespace Proto.Camera
         private Quaternion _fromRot;
         private float _fromFov;
 
+        private IShotProfile _currentShot;
+        private float _shotElapsed;
+
         public CameraMode CurrentMode => _currentMode;
         public bool IsTransitioning => _transitioning;
+        public bool IsPlayingShot => _currentShot != null;
 
         public event Action<CameraMode, CameraMode> ModeChanged;
         public event Action<CameraMode> TransitionCompleted;
+        public event Action ShotStarted;
+        public event Action ShotCompleted;
 
         private void Awake()
         {
@@ -66,6 +72,14 @@ namespace Proto.Camera
 
         public void RequestMode(CameraMode mode, TransitionProfile profile = null)
         {
+            // 쇼트 재생 중이면 즉시 취소 — RequestMode 가 우선권 가짐.
+            if (_currentShot != null)
+            {
+                _currentShot = null;
+                _shotElapsed = 0f;
+                ShotCompleted?.Invoke();
+            }
+
             if (!_transitioning && _currentMode == mode) return;
             if (_transitioning && _toMode == mode) return;
 
@@ -90,6 +104,41 @@ namespace Proto.Camera
             _transitioning = true;
         }
 
+        public void PlayShot(IShotProfile profile)
+        {
+            if (profile == null) return;
+            if (_camera == null) return;
+            _currentShot = profile;
+            _shotElapsed = 0f;
+
+            // 진행 중인 모드 전환은 취소 (쇼트가 우선 오버라이드)
+            _transitioning = false;
+
+            ShotStarted?.Invoke();
+        }
+
+        public void StopShot()
+        {
+            if (_currentShot == null) return;
+
+            // 쇼트 종료 시점의 카메라 상태를 fromXxx 에 스냅샷하고
+            // 현 모드 자연 프레임으로 기본 TransitionProfile 보간.
+            if (_camera != null && _defaultTransition != null && _defaultTransition.durationSec > 0f)
+            {
+                _fromPos = _camera.transform.position;
+                _fromRot = _camera.transform.rotation;
+                _fromFov = _camera.fieldOfView;
+                _toMode = _currentMode;
+                _activeTransition = _defaultTransition;
+                _transitionElapsed = 0f;
+                _transitioning = true;
+            }
+
+            _currentShot = null;
+            _shotElapsed = 0f;
+            ShotCompleted?.Invoke();
+        }
+
         public void RegisterTarget(IFramingTarget target)
         {
             if (target == null || _targets.Contains(target)) return;
@@ -110,6 +159,31 @@ namespace Proto.Camera
         private void LateUpdate()
         {
             if (_camera == null) return;
+
+            // 1. 쇼트 우선: 재생 중이면 쇼트 프로파일이 프레임을 결정
+            if (_currentShot != null)
+            {
+                _shotElapsed += Time.deltaTime;
+                float t01 = Mathf.Clamp01(_shotElapsed / Mathf.Max(_currentShot.Duration, 1e-4f));
+
+                var cfg = GetConfig(_currentMode);
+                var (anchor, _) = _strategy != null
+                    ? _strategy.Compute(_targets, cfg)
+                    : (transform.position, 5f);
+
+                Vector3 sPos = _currentShot.GetPosition(anchor, t01);
+                Quaternion sRot = _currentShot.GetRotation(anchor, sPos, t01);
+                float sFov = _currentShot.GetFov(t01);
+
+                _camera.transform.SetPositionAndRotation(sPos, sRot);
+                _camera.fieldOfView = sFov;
+
+                if (_shotElapsed >= _currentShot.Duration)
+                {
+                    StopShot();
+                }
+                return;
+            }
 
             Vector3 pos; Quaternion rot; float fov;
 
