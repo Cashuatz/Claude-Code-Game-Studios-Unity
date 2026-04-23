@@ -45,9 +45,16 @@
   ```
   _BaseMap, _BaseColor,
   _QuadSize, _AlphaCutoff,
-  _AmbientColor, _BacklightColor, _BacklightIntensity,
+  _AmbientColor, _WrapAmount,
+  _BacklightColor, _BacklightIntensity,
   _WindStrength, _WindSpeed
   ```
+- **라이팅 강도 원칙** (Rev B, 2026-04-24 사용자 피드백 반영):
+  - 기본은 **Lambert** (`NoL`) + `_WrapAmount` 로 래핑 조절.
+  - `_WrapAmount = 0` → 하드(순수 Lambert), `0.5` → half-Lambert, 기본 `0.15`.
+  - `_AmbientColor` 기본 (0.08, 0.10, 0.07) — Rev A 대비 3× 축소.
+  - 목표 대비비: **최소 4× 이상** (실측 Rev B ≈ 12×).
+  - 근거: `.vkl/runtime/case_logs/CL-2026-04-24-004.md` / `OBS-2026-04-24-001.md`.
 
 ## 3. Public API
 
@@ -159,21 +166,27 @@ OUT.positionHCS = TransformWorldToHClip(worldPos);
 OUT.normalWS    = TransformObjectToWorldNormal(IN.normalOS);  // ★ 구 노멀 유지
 ```
 
-### 8.3 프래그먼트 셰이더 요지
+### 8.3 프래그먼트 셰이더 요지 (Rev B)
 ```hlsl
 half4 tex = SAMPLE_TEXTURE2D(_BaseMap, sampler_BaseMap, IN.uv);
 clip(tex.a - _AlphaCutoff);
 
 Light L = GetMainLight();
-half halfLambert = saturate(dot(IN.normalWS, L.direction)) * 0.5 + 0.5;
-half3 lit = tex.rgb * _BaseColor.rgb * (L.color * halfLambert + _AmbientColor.rgb);
+float NoL = dot(IN.normalWS, L.direction);
+half wrap = saturate((NoL + _WrapAmount) / (1.0 + _WrapAmount));
+half3 lit = tex.rgb * _BaseColor.rgb * (L.color * wrap + _AmbientColor.rgb);
 return half4(lit, 1);
 ```
 
-### 8.4 왜 half-Lambert 인가
-- 부쉬·나뭇잎은 실제로 서브서퍼스·광산란이 강해 순수 Lambert(`max(0, NoL)`) 로 하면
-  그림자 쪽이 너무 죽는다.
-- `NoL * 0.5 + 0.5` 는 어두운 쪽에도 노말 방향성을 남기면서 밝은 쪽 피크를 낮춘다 → 잎의 "부드러운" 느낌.
+### 8.4 Lambert vs half-Lambert 선택 근거
+- **Rev A 교훈**: 기본값으로 half-Lambert 쓰면 그림자측 하한이 0.5 로 끌어올려져
+  명암 방향성이 현저히 약해진다 (OBS-2026-04-24-001 에서 대비비 1.7× 측정).
+- **Rev B 해결**: `wrapLambert = saturate((NoL + wrap) / (1 + wrap))`
+  - `wrap=0.0` → 순수 Lambert (강한 명암, 하드)
+  - `wrap=0.5` → half-Lambert (소프트, 그림자측 0.5 하한)
+  - **기본값 `wrap=0.15`** → 잎의 부드러움은 살짝 유지하되 방향성 확실 (대비비 ≈12×).
+- 부쉬·잎은 현실에서 서브서퍼스 산란이 있지만, 연출 차원에서 방향성 우선이
+  납득성이 더 높다. 과도한 소프트닝은 "볼륨이 평면으로 보이는" 저주.
 
 ### 8.5 성능 노트
 - 드로우콜 1개 / 부쉬 (모두 단일 mesh + 단일 머티리얼).

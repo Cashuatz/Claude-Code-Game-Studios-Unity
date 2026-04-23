@@ -6,7 +6,8 @@ Shader "Proto/Env/BushBillboard"
         [MainColor]   _BaseColor("Base Color", Color) = (0.35, 0.55, 0.22, 1)
         _QuadSize("Quad Size", Float) = 0.45
         _AlphaCutoff("Alpha Cutoff", Range(0, 1)) = 0.35
-        _AmbientColor("Ambient Color", Color) = (0.22, 0.28, 0.18, 1)
+        _AmbientColor("Ambient Color", Color) = (0.08, 0.10, 0.07, 1)
+        _WrapAmount("Wrap Lambert (0=hard, 0.5=soft)", Range(0, 0.8)) = 0.15
         _BacklightColor("Backlight Color", Color) = (0.9, 1.0, 0.5, 1)
         _BacklightIntensity("Backlight Intensity", Range(0, 2)) = 0.35
         _WindStrength("Wind Strength", Range(0, 0.3)) = 0.04
@@ -64,6 +65,7 @@ Shader "Proto/Env/BushBillboard"
                 float _QuadSize;
                 float _AlphaCutoff;
                 float4 _AmbientColor;
+                float _WrapAmount;
                 float4 _BacklightColor;
                 float _BacklightIntensity;
                 float _WindStrength;
@@ -109,13 +111,17 @@ Shader "Proto/Env/BushBillboard"
                 float3 L = mainLight.direction;
                 float3 V = normalize(IN.viewDirWS);
 
-                // 원본 구 노멀 기반 half-Lambert (부드러운 볼륨감)
-                half halfLambert = saturate(dot(N, L)) * 0.5 + 0.5;
-                half3 directLit = mainLight.color * halfLambert;
+                // Wrapped Lambert — _WrapAmount=0 이면 순수 Lambert(하드), 0.5 면 half-Lambert(소프트).
+                // 부쉬는 기본 0.15 (살짝만 부드럽게 하고 명암 대비는 유지).
+                float NoL = dot(N, L);
+                half wrapLambert = saturate((NoL + _WrapAmount) / (1.0 + _WrapAmount));
+                half3 directLit = mainLight.color * wrapLambert;
 
                 // 백라이트/서브서퍼스 의사표현: 태양 반대 방향에서 잎이 살짝 빛남
+                // 시야 방향과 광원 반대 방향이 정렬될 때만 활성화 (역광 실루엣 느낌)
                 half backDot = saturate(dot(-N, L));
-                half3 back = _BacklightColor.rgb * _BacklightIntensity * backDot * saturate(dot(V, -L) * 0.5 + 0.5);
+                half viewAlign = saturate(dot(V, -L));
+                half3 back = _BacklightColor.rgb * _BacklightIntensity * backDot * viewAlign;
 
                 half3 albedo = tex.rgb * _BaseColor.rgb;
                 half3 col = albedo * (directLit + _AmbientColor.rgb) + albedo * back;
