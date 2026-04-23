@@ -56,8 +56,8 @@
 - 관계 테스트는 통과하지만 체감 품질 판단이 필요한 경우
 
 7. 출력 형식
-- 비 Proto 브랜치 (main 등): 매 세션의 주 응답은 반드시 OUTPUT_CONTRACT의 구조를 따른다.
-  즉 항상 아래 섹션을 포함하라.
+- **풀 모드 (비 Proto 브랜치, 또는 Proto에서 `/verify` 호출 시)**:
+  매 주 응답은 반드시 OUTPUT_CONTRACT 9섹션 구조를 따른다.
   - Loop Goal
   - Excluded Scope
   - Observed Signals
@@ -67,11 +67,15 @@
   - Decision
   - Next Action
   - Knowledge Assets Updated
-- **Proto 브랜치 / 프로토타이핑 경량 모드**: OUTPUT_CONTRACT 9섹션 강제를 **생략**한다.
-  사용자와의 일상 대화는 평범하게 짧게 주고받는다.
-  단, `/verify` 스킬이 호출되거나 사용자가 명시적으로 "VKL 루프 돌려줘" / "검증해줘" 식으로 요청하면
-  그때는 반드시 OUTPUT_CONTRACT 9섹션 전체를 따른다.
-  판단 원칙(섹션 3)·기록 원칙(섹션 4)은 브랜치와 무관하게 항상 유효하다.
+- **경량 VKL 모드 (Proto 브랜치 기본)**:
+  9섹션 풀 포맷은 생략한다. 대화·구현은 평범한 평문으로 진행한다.
+  그러나 **판단이 포함된 모든 응답**(코드 작성 완료, 버그 원인 추정, 설계 결정, 검증 결과)에는
+  다음 최소 근거를 반드시 1~3줄로 명시한다:
+    - 근거 oracle ID (예: `OR-03 deterministic replay`)
+    - 해당되면 Failure Taxonomy ID (예: `FT-01 spec gap`, `FT-02 hidden semantic rule`)
+    - 신뢰도 수준 (HIGH / MEDIUM / LOW) — 증거 부족 시 LOW 유지
+  근거 라벨이 붙지 않는 순수 대화(질문 응답, 옵션 나열, 잡담)는 자유 형식.
+  판단 원칙(섹션 3)과 기록 원칙(섹션 4)은 두 모드 모두 항상 유효하다.
 
 8. 금지 행동
 - 기준 문서를 직접 수정하지 마라
@@ -82,11 +86,18 @@
 - proposal 없이 taxonomy/oracle/checklist를 세션 내 사실처럼 확대하지 마라
 
 9. 현재 세션 시작 행동
-- 비 Proto 브랜치: 세션 시작 시 즉시 .vkl/core 와 .vkl/project 문서를 전부 읽고,
+- **비 Proto 브랜치 (풀 VKL)**:
+  세션 시작 시 즉시 .vkl/core 와 .vkl/project 문서를 전부 읽고,
   이번 작업에 필요한 failure IDs, oracle IDs, relation IDs를 명시한 뒤,
   그 기준으로만 검증과 지식화를 진행하라.
   새로 필요한 규칙이 있다면 provisional ID를 부여하고 proposal로만 남겨라.
-- **Proto 브랜치**: 세션 시작 시 .claude/docs/vkl-bridge.md 의 원칙 요약만 인지한다.
-  .vkl/core/*, .vkl/project/* 전체 로드는 **토큰 절약을 위해 생략**하고,
-  `/verify` 호출 또는 사용자의 명시적 검증 요청이 있을 때만 필요한 문서를 읽어 풀 루프를 돌린다.
-  즉 Proto에서는 VKL이 "on-demand" 모드로 동작한다.
+- **Proto 브랜치 (경량 VKL — 상시 가동)**:
+  세션 시작 시 다음 core 문서 3개를 반드시 읽어 oracle/FT 인덱스를 머리에 올려둔다:
+    - `.vkl/core/ROLE_AND_RULES.md`
+    - `.vkl/core/FAILURE_TAXONOMY.base.md`
+    - `.vkl/core/ORACLE_CATALOG.base.md`
+  `.vkl/project/*` 는 해당 프로젝트 판단이 실제로 필요할 때 on-demand로 읽는다.
+  `.vkl/core/OUTPUT_CONTRACT.md`, `.vkl/core/ESCALATION_POLICY.md`, `.vkl/core/TEST_RELATIONS.base.md`,
+  `.vkl/core/VALIDATION_CHECKLIST.base.md` 도 `/verify` 호출 또는 해당 유형 판단 시 on-demand 로드.
+  경량 모드에서도 매 판단 응답에는 섹션 7의 최소 근거(oracle ID + FT ID + 신뢰도)를 반드시 붙인다.
+  "oracle 없는 판정은 무효"는 Proto에서도 유효하다.
