@@ -44,12 +44,13 @@ dist/
 !/Packages/com.coplaydev.unity-mcp/Editor~/**
 
 # === VKL Runtime (session-specific verification records) ===
-.vkl/runtime/case_logs/
-.vkl/runtime/observations/
-.vkl/runtime/oracle_runs/
-.vkl/runtime/temporary_hypotheses/
+# .vkl/runtime/case_logs/
+# .vkl/runtime/observations/
+# .vkl/runtime/oracle_runs/
+# .vkl/runtime/temporary_hypotheses/
 
 # === Engine: Unity ===
+[Aa]ssets/ScreenShots/
 [Ll]ibrary/
 [Tt]emp/
 [Oo]bj/
