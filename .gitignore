@@ -134,3 +134,6 @@ $RECYCLE.BIN/
 *.msm
 *.msp
 *.lnk
+
+# Proto: .claude/ 수정용 staging 경로 (mv 로 배포 후 흔적 제거)
+.stage/
