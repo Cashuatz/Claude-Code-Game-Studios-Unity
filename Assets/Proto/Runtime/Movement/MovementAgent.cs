@@ -68,17 +68,25 @@ namespace Proto.Movement
             if (_profile.applyGravity)
             {
                 _isGrounded = CheckGrounded();
-                if (_isGrounded && _verticalVelocity < 0f)
+
+                if (_isGrounded && _verticalVelocity <= 0f)
                 {
-                    _verticalVelocity = -1f;
+                    _verticalVelocity = 0f;
                 }
                 else
                 {
                     _verticalVelocity += _profile.gravity * Time.deltaTime;
                 }
 
-                Vector3 gravityStep = new Vector3(0f, _verticalVelocity * Time.deltaTime, 0f);
-                ApplyMove(gravityStep, fireEvents: false);
+                if (Mathf.Abs(_verticalVelocity) > 1e-5f)
+                {
+                    Vector3 gravityStep = new Vector3(0f, _verticalVelocity * Time.deltaTime, 0f);
+                    MoveResult result = ApplyMove(gravityStep, fireEvents: false);
+                    if (_verticalVelocity < 0f && result != MoveResult.Ok)
+                    {
+                        _verticalVelocity = 0f;
+                    }
+                }
             }
             else
             {

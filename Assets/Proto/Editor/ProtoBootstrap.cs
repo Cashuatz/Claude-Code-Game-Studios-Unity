@@ -115,10 +115,17 @@ namespace Proto.EditorTools
             // 4. ProtoMain.unity 씬 생성/배치 (EmptyScene; 조명/그라운드/유닛/카메라는 수동 배치)
             var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
 
-            // Ground plane
+            // Ground plane — 시각은 Plane 메시(10x10) + 콜라이더는 BoxCollider
+            // (HR-1 은 Rigidbody 를 금지하지만 쿼리용 콜라이더는 허용. Plane 프리미티브의
+            //  기본 non-convex MeshCollider 는 가장자리 노멀 불안정으로 지터 유발하므로 교체.)
             var ground = GameObject.CreatePrimitive(PrimitiveType.Plane);
             ground.name = "Ground";
             ground.transform.localScale = new Vector3(2f, 1f, 2f);
+            var groundMesh = ground.GetComponent<MeshCollider>();
+            if (groundMesh != null) Object.DestroyImmediate(groundMesh);
+            var groundBox = ground.AddComponent<BoxCollider>();
+            groundBox.size = new Vector3(10f, 0.02f, 10f);
+            groundBox.center = new Vector3(0f, -0.01f, 0f);
 
             // Directional light
             var lightGo = new GameObject("Directional Light");
