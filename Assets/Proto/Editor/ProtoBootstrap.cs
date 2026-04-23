@@ -2,6 +2,7 @@
 using System.IO;
 using Proto.Camera;
 using Proto.Movement;
+using Proto.Testing;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -76,6 +77,8 @@ namespace Proto.EditorTools
             AssetDatabase.SaveAssets();
 
             // 2. Unit_Base.prefab 생성
+            // MovementAgent + ProtoUnitTarget(IFramingTarget) + ProtoEventEmitter + ProtoDebugInput
+            // 시각적 확인을 위한 Capsule 자식 메시(MeshCollider 없음)도 함께 추가.
             var unitPath = $"{PrefabRoot}/Movement/Unit_Base.prefab";
             var unitGo = new GameObject("Unit_Base");
             var cap = unitGo.AddComponent<CapsuleCollider>();
@@ -86,6 +89,19 @@ namespace Proto.EditorTools
             cap.isTrigger = false;
             var agent = unitGo.AddComponent<MovementAgent>();
             SetPrivateSerialized(agent, "_profile", moveDefault);
+
+            // 시각 메시 (자식): Capsule 프리미티브에서 MeshCollider 제거
+            var visual = GameObject.CreatePrimitive(PrimitiveType.Capsule);
+            visual.name = "Visual";
+            var visualCollider = visual.GetComponent<Collider>();
+            if (visualCollider != null) Object.DestroyImmediate(visualCollider);
+            visual.transform.SetParent(unitGo.transform, worldPositionStays: false);
+            visual.transform.localPosition = new Vector3(0f, 0.9f, 0f);
+            visual.transform.localScale = new Vector3(0.8f, 0.9f, 0.8f);
+
+            unitGo.AddComponent<ProtoUnitTarget>();
+            unitGo.AddComponent<ProtoEventEmitter>();
+            unitGo.AddComponent<ProtoDebugInput>();
 
             var unitPrefab = PrefabUtility.SaveAsPrefabAsset(unitGo, unitPath);
             Object.DestroyImmediate(unitGo);
