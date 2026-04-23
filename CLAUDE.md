@@ -83,6 +83,8 @@ Proto 브랜치에서도 **VKL(Validation-Knowledge-Loop) 검증 원칙은 유�
 
 @.claude/docs/vkl-bridge.md
 
+@.vkl/SessionStart.md
+
 ## 코딩 스타일 (최소)
 
 - **네이밍**: 클래스/메서드 PascalCase, 지역변수 camelCase, private 필드 `_camelCase`, 상수 UPPER_SNAKE_CASE

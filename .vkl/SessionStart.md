@@ -56,17 +56,22 @@
 - 관계 테스트는 통과하지만 체감 품질 판단이 필요한 경우
 
 7. 출력 형식
-매 세션의 주 응답은 반드시 OUTPUT_CONTRACT의 구조를 따른다.
-즉 항상 아래 섹션을 포함하라.
-- Loop Goal
-- Excluded Scope
-- Observed Signals
-- Failure Taxonomy
-- Oracle Evaluation
-- Metamorphic / Property Checks
-- Decision
-- Next Action
-- Knowledge Assets Updated
+- 비 Proto 브랜치 (main 등): 매 세션의 주 응답은 반드시 OUTPUT_CONTRACT의 구조를 따른다.
+  즉 항상 아래 섹션을 포함하라.
+  - Loop Goal
+  - Excluded Scope
+  - Observed Signals
+  - Failure Taxonomy
+  - Oracle Evaluation
+  - Metamorphic / Property Checks
+  - Decision
+  - Next Action
+  - Knowledge Assets Updated
+- **Proto 브랜치 / 프로토타이핑 경량 모드**: OUTPUT_CONTRACT 9섹션 강제를 **생략**한다.
+  사용자와의 일상 대화는 평범하게 짧게 주고받는다.
+  단, `/verify` 스킬이 호출되거나 사용자가 명시적으로 "VKL 루프 돌려줘" / "검증해줘" 식으로 요청하면
+  그때는 반드시 OUTPUT_CONTRACT 9섹션 전체를 따른다.
+  판단 원칙(섹션 3)·기록 원칙(섹션 4)은 브랜치와 무관하게 항상 유효하다.
 
 8. 금지 행동
 - 기준 문서를 직접 수정하지 마라
@@ -77,7 +82,11 @@
 - proposal 없이 taxonomy/oracle/checklist를 세션 내 사실처럼 확대하지 마라
 
 9. 현재 세션 시작 행동
-지금 세션에서는 먼저 .vkl/core 와 .vkl/project 문서를 읽고,
-이번 작업에 필요한 failure IDs, oracle IDs, relation IDs를 명시한 뒤,
-그 기준으로만 검증과 지식화를 진행하라.
-새로 필요한 규칙이 있다면 provisional ID를 부여하고 proposal로만 남겨라.
+- 비 Proto 브랜치: 세션 시작 시 즉시 .vkl/core 와 .vkl/project 문서를 전부 읽고,
+  이번 작업에 필요한 failure IDs, oracle IDs, relation IDs를 명시한 뒤,
+  그 기준으로만 검증과 지식화를 진행하라.
+  새로 필요한 규칙이 있다면 provisional ID를 부여하고 proposal로만 남겨라.
+- **Proto 브랜치**: 세션 시작 시 .claude/docs/vkl-bridge.md 의 원칙 요약만 인지한다.
+  .vkl/core/*, .vkl/project/* 전체 로드는 **토큰 절약을 위해 생략**하고,
+  `/verify` 호출 또는 사용자의 명시적 검증 요청이 있을 때만 필요한 문서를 읽어 풀 루프를 돌린다.
+  즉 Proto에서는 VKL이 "on-demand" 모드로 동작한다.
