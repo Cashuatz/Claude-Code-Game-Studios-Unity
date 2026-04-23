@@ -131,7 +131,7 @@ namespace Proto.Environment.Bush
         }
 
         /// <summary>쿼드 카드 N 개를 구 표면에 배치한 메시 생성.</summary>
-        private static void BuildBushMesh(Mesh mesh, int quadCount, float radius)
+        public static void BuildBushMesh(Mesh mesh, int quadCount, float radius)
         {
             quadCount = Mathf.Max(1, quadCount);
             var verts   = new Vector3[quadCount * 4];
