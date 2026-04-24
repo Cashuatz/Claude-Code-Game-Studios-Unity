@@ -4,19 +4,7 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes:
-  - enabled: 1
-    path: Assets/Proto/Scenes/Proto_Launcher.unity
-    guid: c3387a6420ce51144b0c3d13651e3586
-  - enabled: 1
-    path: Assets/Proto/Scenes/Proto_Turn3d.unity
-    guid: 51977036f669b1b41b2f2ab393b56627
-  - enabled: 1
-    path: Assets/Proto/Scenes/Proto_TD.unity
-    guid: 9b7002bdd3a88724d8176e8f3a3ebbbd
-  - enabled: 1
-    path: Assets/Proto/Scenes/Proto_RailShooter.unity
-    guid: fc6331c0c12304d4aa7e87351b373b80
+  m_Scenes: []
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   m_UseUCBPForAssetBundles: 0

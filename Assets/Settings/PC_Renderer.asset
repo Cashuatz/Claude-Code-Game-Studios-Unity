@@ -12,13 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5cc309a86fd9aac47888ac15387a647b, type: 3}
   m_Name: Proto_FullscreenSample
   m_EditorClassIdentifier: Proto::Proto.Rendering.FullscreenSampleFeature
-  m_Active: 1
+  m_Active: 0
   settings:
     injectionPoint: 600
     effectStrength: 0.85
     vignetteRadius: 0.8
     vignetteSoftness: 0.45
-    scanlineStrength: 0.12
+    scanlineStrength: 0.668
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
