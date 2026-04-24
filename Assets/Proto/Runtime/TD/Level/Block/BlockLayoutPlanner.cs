@@ -21,11 +21,12 @@ namespace Proto.TD.Level.Block
         public enum CellRole : byte
         {
             Grass = 0,   // 기본값, 블록 내부 빈 공간
-            Road = 1,    // 도로 스트립
-            Sidewalk = 2,// 블록 가장자리 (차도-블록 경계)
+            Road = 1,    // 차도 (게임 경로)
+            Sidewalk = 2,// 인도 (블록 가장자리 링, tower pad 후보)
             Building = 3,// 블록 내부 건물 lot
-            Park = 4,    // Open 블록 (공원 전체)
-            EmptyBlock = 5 // Empty 블록 (도로만 보이는 광장 효과)
+            Park = 4,    // Open 블록 (공원 전체, bush)
+            EmptyBlock = 5, // Empty 블록 (도로만 보이는 광장 효과)
+            Planter = 6  // 차도-인도 경계 녹지 띠 (sidewalk 중 road 접한 셀)
         }
 
         public struct Params
@@ -64,24 +65,28 @@ namespace Proto.TD.Level.Block
             /// <summary>블록 가장자리 sidewalk 두께 (셀).</summary>
             public int SidewalkInsetCells;
 
+            /// <summary>차도 접한 인도 셀이 planter (bush) 로 승격될 확률 (0..1).</summary>
+            public double PlanterProbabilityOnSidewalk;
+
             public static Params TdDefault() => new Params
             {
-                TargetBlockCellSize = 7,
+                TargetBlockCellSize = 9,
                 BlockSpacingJitter = 0.20,
                 RoadWidthLocal = 1,
-                RoadWidthCollector = 1,
-                RoadWidthArterial = 2,
+                RoadWidthCollector = 2,
+                RoadWidthArterial = 3,
                 WeightLocal = 0.55,
                 WeightCollector = 0.30,
                 WeightArterial = 0.15,
-                EmptyBlockProbability = 0.15,
-                OpenBlockFractionOfNonEmpty = 0.25,
+                EmptyBlockProbability = 0.12,
+                OpenBlockFractionOfNonEmpty = 0.22,
                 MixedBlockFractionOfNonEmpty = 0.50,
-                MaxLotSplitDepth = 2,
+                MaxLotSplitDepth = 3,
                 MinLotCellEdge = 2,
-                SplitChance = 0.65,
-                BuildingFootprint = 0.85,
-                SidewalkInsetCells = 1
+                SplitChance = 0.70,
+                BuildingFootprint = 0.78,
+                SidewalkInsetCells = 2,
+                PlanterProbabilityOnSidewalk = 0.35
             };
         }
 
@@ -121,11 +126,6 @@ namespace Proto.TD.Level.Block
             // 수직 도로: 각 xStop 을 중심으로 xWidth 폭만큼
             for (int i = 0; i < xStops.Length; i++)
                 PaintVerticalRoad(roles, width, height, xStops[i], xWidths[i]);
-
-            int roadCount = 0;
-            for (int y = 0; y < height; y++)
-                for (int x = 0; x < width; x++)
-                    if (roles[x, y] == CellRole.Road) roadCount++;
 
             // ── 블록 순회 ────────────────────────────────────
             int blockCount = 0, eBlocks = 0, oBlocks = 0, mBlocks = 0, dBlocks = 0;
@@ -184,6 +184,28 @@ namespace Proto.TD.Level.Block
                     SubdivideAndBuild(roles, rng, lotXLo, lotYLo, lotXHi, lotYHi, 0, maxDepth, splitChance, p, ref buildingCount);
                 }
             }
+
+            // ── Planter strip: 인도 중 도로 접한 셀을 확률적으로 Planter 로 승격 ──
+            // 도로 옆 녹지 띠 효과. 차도-인도 시각 구분 + 도메인 룰 (타워 배치 공간은 인도).
+            if (p.PlanterProbabilityOnSidewalk > 0.0)
+            {
+                for (int y = 0; y < height; y++)
+                {
+                    for (int x = 0; x < width; x++)
+                    {
+                        if (roles[x, y] != CellRole.Sidewalk) continue;
+                        if (!IsAdjacentToRole(roles, width, height, x, y, CellRole.Road)) continue;
+                        if (rng.NextDouble() < p.PlanterProbabilityOnSidewalk)
+                            roles[x, y] = CellRole.Planter;
+                    }
+                }
+            }
+
+            // Road 셀 수 최종 집계 (path override 없이 순수 블록 레이아웃 기준)
+            int roadCount = 0;
+            for (int y = 0; y < height; y++)
+                for (int x = 0; x < width; x++)
+                    if (roles[x, y] == CellRole.Road) roadCount++;
 
             return new Result
             {
@@ -390,6 +412,15 @@ namespace Proto.TD.Level.Block
         }
 
         private static double Lerp(double a, double b, double t) => a + (b - a) * t;
+
+        private static bool IsAdjacentToRole(CellRole[,] roles, int w, int h, int x, int y, CellRole target)
+        {
+            if (x + 1 < w && roles[x + 1, y] == target) return true;
+            if (x - 1 >= 0 && roles[x - 1, y] == target) return true;
+            if (y + 1 < h && roles[x, y + 1] == target) return true;
+            if (y - 1 >= 0 && roles[x, y - 1] == target) return true;
+            return false;
+        }
 
         private static Result Fail(string reason) => new Result { Success = false, Reason = reason, Roles = null };
     }

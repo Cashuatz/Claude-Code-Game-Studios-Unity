@@ -258,6 +258,7 @@ namespace Proto.TD.Level.Wfc
             {
                 case BlockLayoutPlanner.CellRole.Road: return 1;
                 case BlockLayoutPlanner.CellRole.Sidewalk: return 2;
+                case BlockLayoutPlanner.CellRole.Planter: return 3;
                 case BlockLayoutPlanner.CellRole.EmptyBlock: return 3;
                 case BlockLayoutPlanner.CellRole.Park: return 4;
                 case BlockLayoutPlanner.CellRole.Grass: return 5;
@@ -286,8 +287,11 @@ namespace Proto.TD.Level.Wfc
                     return TdDefaultTileSet.T_BuildingSmall;
                 case BlockLayoutPlanner.CellRole.Park:
                     return TdDefaultTileSet.T_GrassBush;
-                case BlockLayoutPlanner.CellRole.EmptyBlock:
                 case BlockLayoutPlanner.CellRole.Sidewalk:
+                    return TdDefaultTileSet.T_Sidewalk;
+                case BlockLayoutPlanner.CellRole.Planter:
+                    return TdDefaultTileSet.T_Planter;
+                case BlockLayoutPlanner.CellRole.EmptyBlock:
                 case BlockLayoutPlanner.CellRole.Grass:
                 default:
                     return TdDefaultTileSet.T_GrassFlat;

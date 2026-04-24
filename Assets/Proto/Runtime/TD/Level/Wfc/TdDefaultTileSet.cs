@@ -23,6 +23,8 @@ namespace Proto.TD.Level.Wfc
         public const string T_RoadEndN = "road-end-n";
         public const string T_GrassFlat = "grass-flat";
         public const string T_GrassBush = "grass-bush";
+        public const string T_Sidewalk = "sidewalk";
+        public const string T_Planter = "planter";
         public const string T_BuildingSmall = "building-small";
         public const string T_PowerPad = "power-pad";
         public const string T_TowerPad = "tower-pad";
@@ -47,6 +49,9 @@ namespace Proto.TD.Level.Wfc
                 // environment
                 new WfcTileData(T_GrassFlat,      TileRole.Grass, o, o, o, o, weight: 10, allowRotation: false),
                 new WfcTileData(T_GrassBush,      TileRole.Grass, o, o, o, o, weight: 2,  allowRotation: false),
+                // sidewalk / planter 는 fixed-only (weight 0) — BlockLayoutPlanner 에서만 배치.
+                new WfcTileData(T_Sidewalk,       TileRole.Grass, o, o, o, o, weight: 0, allowRotation: false),
+                new WfcTileData(T_Planter,        TileRole.Grass, o, o, o, o, weight: 0, allowRotation: false),
                 new WfcTileData(T_BuildingSmall,  TileRole.Building, o, o, o, o, weight: 4, allowRotation: false),
                 // fixed-only (weight 0 → only appear via FixedCells)
                 new WfcTileData(T_PowerPad,       TileRole.PowerPad, o, o, o, o, weight: 0, allowRotation: false),

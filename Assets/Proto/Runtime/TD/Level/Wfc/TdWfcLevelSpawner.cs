@@ -139,7 +139,9 @@ namespace Proto.TD.Level.Wfc
 
         private static Color ColorForTile(string tileId)
         {
-            if (tileId.StartsWith("road-")) return new Color(0.40f, 0.40f, 0.42f);
+            if (tileId.StartsWith("road-")) return new Color(0.38f, 0.38f, 0.41f);
+            if (tileId == "sidewalk") return new Color(0.72f, 0.72f, 0.70f);
+            if (tileId == "planter") return new Color(0.25f, 0.50f, 0.22f);
             if (tileId.StartsWith("grass-bush")) return new Color(0.20f, 0.55f, 0.25f);
             if (tileId.StartsWith("grass-")) return new Color(0.32f, 0.68f, 0.34f);
             if (tileId == "building-small") return new Color(0.65f, 0.55f, 0.45f);
@@ -153,12 +155,16 @@ namespace Proto.TD.Level.Wfc
         private static float HeightForTile(string tileId)
         {
             if (tileId == "building-small") return 3.5f;
-            if (tileId == "grass-bush") return 0.6f;
+            if (tileId == "grass-bush") return 0.55f;
+            if (tileId == "planter") return 0.5f;
+            if (tileId == "sidewalk") return 0.28f;
             if (tileId == "core-base") return 2.0f;
             if (tileId == "power-pad") return 1.0f;
             if (tileId == "tower-pad") return 0.6f;
             if (tileId == "border-void") return 0.2f;
-            return 0.35f;
+            // road tiles a touch lower than grass/sidewalk so roads look "worn in"
+            if (tileId.StartsWith("road-")) return 0.18f;
+            return 0.3f;
         }
 
         private static ulong ParseSeed(string hex)

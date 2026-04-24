@@ -39,11 +39,11 @@ namespace Proto.TD.Editor
             var spawner = spawnerGO.GetComponent<TdWfcLevelSpawner>();
             if (spawner == null) spawner = spawnerGO.AddComponent<TdWfcLevelSpawner>();
 
-            spawner.gridSize = 40;
+            spawner.gridSize = 60;
             spawner.seedHex = "C0FFEE";
             spawner.laneCount = 2;
-            spawner.coreBase = new Vector2Int(20, 20);
-            spawner.powerSources = new[] { new Vector2Int(5, 5), new Vector2Int(34, 34) };
+            spawner.coreBase = new Vector2Int(30, 30);
+            spawner.powerSources = new[] { new Vector2Int(8, 8), new Vector2Int(52, 52) };
             spawner.autoGenerateOnStart = false;
             spawner.writeJsonToAssets = true;
             spawner.Generate();
@@ -80,9 +80,9 @@ namespace Proto.TD.Editor
             cam.clearFlags = CameraClearFlags.SolidColor;
             cam.backgroundColor = new Color(0.05f, 0.05f, 0.08f);
             cam.orthographic = false;
-            cam.fieldOfView = 35f;
-            cam.transform.position = new Vector3(0f, 55f, -35f);
-            cam.transform.rotation = Quaternion.Euler(55f, 0f, 0f);
+            cam.fieldOfView = 40f;
+            cam.transform.position = new Vector3(0f, 70f, -42f);
+            cam.transform.rotation = Quaternion.Euler(62f, 0f, 0f);
         }
     }
 }
