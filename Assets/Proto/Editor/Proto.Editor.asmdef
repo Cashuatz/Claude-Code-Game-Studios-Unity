@@ -4,7 +4,8 @@
     "references": [
         "Proto",
         "Unity.TextMeshPro",
-        "Unity.ugui"
+        "Unity.ugui",
+        "Unity.InputSystem"
     ],
     "includePlatforms": [
         "Editor"
