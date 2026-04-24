@@ -62,6 +62,7 @@
 | 34 | `td-lowpoly-env-default` | 아트 | 에셋 | 3D 로우폴리 배경/지형 번들 (Q8-C 보조) |
 | 35 | `td-sim-parity` | 검증 | QA | 웹 ↔ Unity 결과 동일성 검증기 (HR-TD-9) |
 | 36 | `td-playtest-runner` | 검증 | QA | Monte Carlo 자동 플레이테스트 (HR-TD-8) |
+| 37 | `stage-pcg-wfc` | 코어·공간 | 레벨 | Wave Function Collapse 기반 결정론 타일 배치 (TD 레벨 템플릿 생성 엔진) |
 
 ### 공유 모듈 (imports)
 
@@ -87,7 +88,8 @@ td-json-importer           │
    │                       │
 td-web-bridge              │
                            │
-td-level-template-{S,M,L} ─┤
+td-level-template-{S,M,L} ──► stage-pcg-wfc (선택, JSON 생성 엔진)
+                           │
                            │
 td-placement-{grid,free} ──┼──► td-hub-network ──► td-resource-ledger
                            │                          ▲
@@ -177,6 +179,7 @@ td-playtest-runner ──► td-sim-core, td-json-importer
 | td-lowpoly-env-default | `/proto-td-art` (인자: `mixed`) |
 | td-sim-parity | `/proto-td-parity` |
 | td-playtest-runner | `/proto-td-playtest` |
+| stage-pcg-wfc | `/proto-stage-wfc` (인자: `size`, `seed`, `tileset`) — TD 레벨은 `/proto-td-level --wfc` 로도 호출 |
 
 별도 메타 스킬:
 - `/proto-td-skeleton` — Phase A 최소 설치 (sim-core + json-importer + 빈 레벨 + 카메라). 장르 확정 직후 1회.
