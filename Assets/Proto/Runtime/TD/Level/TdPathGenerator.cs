@@ -21,12 +21,15 @@ namespace Proto.TD.Level
 
         /// <param name="laneCount">Q6 답변(1~4).</param>
         /// <param name="borderInset">경계 타일을 WFC 가 먹으므로 스폰 후보는 inset 만큼 안쪽.</param>
+        /// <param name="cellCostHint">옵션. 셀별 추가 비용 (int.MaxValue = 통과 불가).
+        /// 블록 하이브리드 모드에서 road 셀은 싸게, building 셀은 막고, grass 는 비싸게 하는 데 쓴다.</param>
         public static Result Generate(
             int width, int height,
             ulong seed,
             AStarGrid.Cell coreBase,
             int laneCount,
-            int borderInset = 1)
+            int borderInset = 1,
+            Func<int, int, int> cellCostHint = null)
         {
             if (laneCount < 1) laneCount = 1;
             if (laneCount > 8) laneCount = 8;
@@ -48,7 +51,15 @@ namespace Proto.TD.Level
                 if (x < borderInset || x >= width - borderInset
                     || y < borderInset || y >= height - borderInset)
                     return int.MaxValue;
-                return 1 + pathCellCost[x, y];
+
+                int baseCost = 1;
+                if (cellCostHint != null)
+                {
+                    int hint = cellCostHint(x, y);
+                    if (hint == int.MaxValue) return int.MaxValue;
+                    baseCost = hint;
+                }
+                return baseCost + pathCellCost[x, y];
             };
 
             var candidates = CollectPlayableBorderCells(width, height, borderInset, coreBase);
