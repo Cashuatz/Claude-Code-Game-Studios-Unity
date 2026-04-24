@@ -75,7 +75,6 @@ namespace Proto.UI.Speech
         private Coroutine _routine;
         private readonly Queue<PendingLine> _pending = new();
         private bool _isSpeaking;
-        private bool _appearanceApplied;
         private string _appendBuffer = string.Empty;
 
         private readonly struct PendingLine
@@ -245,10 +244,11 @@ namespace Proto.UI.Speech
                 ProcessNext();
         }
 
+        // idempotent: 레퍼런스가 없으면 skip, sprite 가 이미 있으면 재생성 안 함.
+        // AddComponent 시점에 Awake 가 즉시 호출되어도(= 아직 레퍼런스 null)
+        // Create() 가 레퍼런스 할당 후 다시 불러 복구할 수 있도록 래치 제거.
         private void EnsureAppearance()
         {
-            if (_appearanceApplied) return;
-
             if (_bodyImage != null)
             {
                 if (_bodyImage.sprite == null)
@@ -276,7 +276,6 @@ namespace Proto.UI.Speech
                 _text.color = _textColor;
                 _text.text = string.Empty;
             }
-            _appearanceApplied = true;
         }
 
         // ───── Static Factory ─────
@@ -347,6 +346,9 @@ namespace Proto.UI.Speech
 
             // 꼬리 길이만큼 body 를 위로 밀어 꼬리 끝(타겟 포인트) 이 root 위치와 맞물리게
             bodyRT.anchoredPosition = new Vector2(0f, sb._tailSize.y);
+
+            // Show() 호출 전엔 빈 말풍선이 드러나지 않도록 기본 Hide.
+            bodyRT.gameObject.SetActive(false);
 
             return sb;
         }
