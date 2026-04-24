@@ -2,6 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+// 네임스페이스 충돌 회피: 이 어셈블리에 Proto.Camera 네임스페이스가 존재하므로
+// 부모 네임스페이스 스코프에서 Camera 가 Proto.Camera(namespace) 로 해석된다.
+// UnityEngine.Camera(type) 을 명확히 가리키기 위해 alias 를 둔다.
+using UnityCamera = UnityEngine.Camera;
 
 namespace Proto.UI.Speech
 {
@@ -35,8 +39,8 @@ namespace Proto.UI.Speech
         [SerializeField] private Transform _target;
         [Tooltip("타겟 피벗 기준 월드 오프셋 (보통 Y = 캐릭터 머리 위).")]
         [SerializeField] private Vector3 _worldOffset = new Vector3(0f, 2f, 0f);
-        [Tooltip("비우면 Camera.main 자동 캐시.")]
-        [SerializeField] private Camera _camera;
+        [Tooltip("비우면 UnityCamera.main 자동 캐시.")]
+        [SerializeField] private UnityCamera _camera;
         [Tooltip("타겟이 카메라 뒤로 갔을 때 말풍선을 숨길지.")]
         [SerializeField] private bool _hideWhenBehindCamera = true;
 
@@ -90,14 +94,14 @@ namespace Proto.UI.Speech
 
         private void Awake()
         {
-            if (_camera == null) _camera = Camera.main;
+            if (_camera == null) _camera = UnityCamera.main;
             EnsureAppearance();
             if (_bodyRect != null) _bodyRect.gameObject.SetActive(false);
         }
 
         private void OnEnable()
         {
-            if (_camera == null) _camera = Camera.main;
+            if (_camera == null) _camera = UnityCamera.main;
         }
 
         private void LateUpdate()
@@ -105,7 +109,7 @@ namespace Proto.UI.Speech
             if (_target == null) return;
             if (_camera == null)
             {
-                _camera = Camera.main;
+                _camera = UnityCamera.main;
                 if (_camera == null) return;
             }
 
@@ -134,7 +138,7 @@ namespace Proto.UI.Speech
             if (worldOffset.HasValue) _worldOffset = worldOffset.Value;
         }
 
-        public void SetCamera(Camera cam) => _camera = cam;
+        public void SetCamera(UnityCamera cam) => _camera = cam;
 
         public void Show(string text) => Show(text, null, null);
 
@@ -338,7 +342,7 @@ namespace Proto.UI.Speech
             sb._tailImage = tailImg;
             sb._text = txt;
             sb._target = target;
-            sb._camera = Camera.main;
+            sb._camera = UnityCamera.main;
             sb.EnsureAppearance();
 
             // 꼬리 길이만큼 body 를 위로 밀어 꼬리 끝(타겟 포인트) 이 root 위치와 맞물리게
