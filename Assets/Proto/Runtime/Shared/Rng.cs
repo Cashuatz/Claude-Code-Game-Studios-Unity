@@ -1,9 +1,9 @@
 using System;
 
-namespace Proto.TD.Sim
+namespace Proto.Shared
 {
     /// <summary>
-    /// HR-TD-2 공식 RNG. Xorshift64 — 순수 C#, UnityEngine 참조 금지.
+    /// 공용 결정론 RNG. Xorshift64 — 순수 C#, UnityEngine 참조 금지.
     /// Seed=0은 자동으로 1로 치환해 all-zero lock 상태를 회피한다.
     /// 동일 seed + 동일 호출 순서 → 동일 결과.
     /// </summary>

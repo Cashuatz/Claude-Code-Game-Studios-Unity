@@ -143,3 +143,9 @@ $RECYCLE.BIN/
 
 # Proto: worktree 런타임 디렉토리 (레포에 커밋하지 않음)
 .claude/worktrees/
+
+# Proto: Claude Code 세션 런타임 락 (sessionId·PID 포함, 배포 대상 아님)
+.claude/scheduled_tasks.lock
+
+# Proto: Unity 자동 생성 복구 디렉토리 meta
+Assets/_Recovery.meta
