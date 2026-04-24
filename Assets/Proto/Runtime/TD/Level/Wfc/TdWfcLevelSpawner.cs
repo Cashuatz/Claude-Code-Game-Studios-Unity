@@ -35,6 +35,13 @@ namespace Proto.TD.Level.Wfc
         public float cellSize = 1f;
         public bool autoGenerateOnStart = true;
 
+        /// <summary>
+        /// 마지막 Generate 의 결과. PCG 에디터(Cityscape Window) 가 메트릭 표시에 사용.
+        /// Generate 실패 시 <see cref="TdLevelWfcAdapter.Result.Success"/> 가 false.
+        /// </summary>
+        public TdLevelWfcAdapter.Result LastResult { get; private set; }
+        public bool HasResult { get; private set; }
+
         private void Start()
         {
             if (autoGenerateOnStart) Generate();
@@ -57,6 +64,8 @@ namespace Proto.TD.Level.Wfc
             };
 
             var result = TdLevelWfcAdapter.Build(spec);
+            LastResult = result;
+            HasResult = true;
             if (!result.Success)
             {
                 Debug.LogError($"[TdWfcLevelSpawner] generation failed: {result.WfcStatus} — {result.Reason} @ ({result.ContradictionX},{result.ContradictionY})");
