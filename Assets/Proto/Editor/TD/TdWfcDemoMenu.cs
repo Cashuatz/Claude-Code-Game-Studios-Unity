@@ -12,7 +12,7 @@ namespace Proto.TD.Editor
         private const string ScenePath = "Assets/Proto/Scenes/TdWfcDemo.unity";
         private const string SpawnerName = "WfcSpawner";
 
-        [MenuItem("Tools/Proto TD/Generate WFC Demo Level")]
+        [MenuItem("Proto/Stage/Generate WFC Demo Level", priority = 22)]
         public static void GenerateDemo()
         {
             var scene = EditorSceneManager.GetActiveScene();

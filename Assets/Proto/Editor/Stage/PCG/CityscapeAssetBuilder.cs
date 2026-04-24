@@ -25,7 +25,7 @@ namespace Proto.EditorTools.Stage.PCG
         private static readonly Color ColorPlanter  = new Color(0.45f, 0.30f, 0.18f);
         private static readonly Color ColorGrass    = new Color(0.30f, 0.55f, 0.25f);
 
-        [MenuItem("Proto/Stage/Cityscape — Build Default Assets", priority = 10)]
+        [MenuItem("Proto/Stage/Cityscape — Build Default Assets", priority = 21)]
         public static CityscapeAssetSet BuildDefaults()
         {
             EnsureFolder(ConfigRoot);

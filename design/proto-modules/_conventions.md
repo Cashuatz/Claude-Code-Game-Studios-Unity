@@ -70,6 +70,21 @@
 - `Canvas` 는 일반적으로 **Screen Space - Overlay** 기본. 월드 공간 UI 는 모듈별로 명시.
 - 모든 프로토 씬은 `EventSystem` GameObject 1개 보장 (스킬이 없으면 생성).
 
+### HR-12. Editor 메뉴 루트는 `Proto/` 로 고정
+- 모든 `[MenuItem(...)]` 경로는 **`Proto/` 루트 하위**에 둔다.
+  - 금지: `Tools/`, `Assets/`, `GameObject/`, `Window/`, `Help/` 등 Unity 기본 루트 사용.
+  - 금지: `Tools/Proto/...`, `Proto Tools/...`, `MyGame/...` 같은 변종 루트.
+- **예외**: `CONTEXT/<Component>/...` 컴포넌트 컨텍스트 메뉴는 허용 (Unity 규약).
+- **표준 카테고리** (추가 시 이 목록에 선등록):
+  - `Proto/Bootstrap/...` — 씬/프로젝트 초기화 (priority 1–9)
+  - `Proto/Stage/...` — 스테이지·레벨 생성기 (priority 20–29)
+  - `Proto/Environment/...` — 환경 에셋·VFX 베이커 (priority 40–49)
+  - `Proto/Test Window` 등 단독 도구 (priority 100+)
+- **priority 규칙**: 카테고리 간격 ≥ 11 (Unity 는 간격 11 이상일 때 구분선 생성).
+- **언더스코어 금지**: `Phase0_BuildLauncher` 같은 플랫 네이밍 대신
+  `Proto/Bootstrap/Build Launcher` 식 슬래시 계층 + 공백 구분.
+- **검증**: 새 에디터 스크립트 작성 시 `Grep "MenuItem\\(\"(?!Proto/|CONTEXT/)"` 로 위반 검출.
+
 ## 파일·폴더 규칙
 
 ### Asset 경로

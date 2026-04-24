@@ -9,7 +9,7 @@ namespace Proto.Editor.Environment
     /// <summary>
     /// 부쉬 빌보드 메시 / 리프 텍스처 에셋 베이커.
     ///
-    /// - Tools > Proto > Bush > Bake Default Meshes  : 기본 3종 (q=20/50/100) 메시 + 리프 텍스처를 에셋으로 저장.
+    /// - Proto > Environment > Bush > Bake Default Meshes  : 기본 3종 (q=20/50/100) 메시 + 리프 텍스처를 에셋으로 저장.
     /// - 컴포넌트 컨텍스트 메뉴에서 "Save Current Mesh As Asset..." 실행 시 현재 컴포넌트의 메시만 저장.
     /// </summary>
     public static class BushAssetBaker
@@ -17,7 +17,7 @@ namespace Proto.Editor.Environment
         private const string MeshDir = "Assets/Proto/VFX/Environment/Meshes";
         private const string TexDir  = "Assets/Proto/VFX/Environment/Textures";
 
-        [MenuItem("Tools/Proto/Bush/Bake Default Meshes")]
+        [MenuItem("Proto/Environment/Bush/Bake Default Meshes", priority = 40)]
         public static void BakeDefaultMeshes()
         {
             EnsureDir(MeshDir);

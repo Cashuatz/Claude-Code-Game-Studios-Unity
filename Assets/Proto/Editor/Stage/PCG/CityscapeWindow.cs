@@ -85,7 +85,7 @@ namespace Proto.EditorTools.Stage.PCG
         private TextField _metricsField;
         private ScrollView _logScroll;
 
-        [MenuItem("Proto/Stage/Cityscape Window")]
+        [MenuItem("Proto/Stage/Cityscape Window", priority = 20)]
         public static void Open()
         {
             var win = GetWindow<CityscapeWindow>("Cityscape PCG");
