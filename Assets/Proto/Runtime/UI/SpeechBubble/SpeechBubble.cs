@@ -4,44 +4,28 @@ using UnityEngine;
 using UnityEngine.UI;
 // 네임스페이스 충돌 회피: 이 어셈블리에 Proto.Camera 네임스페이스가 존재하므로
 // 부모 네임스페이스 스코프에서 Camera 가 Proto.Camera(namespace) 로 해석된다.
-// UnityEngine.Camera(type) 을 명확히 가리키기 위해 alias 를 둔다.
 using UnityCamera = UnityEngine.Camera;
 
 namespace Proto.UI.Speech
 {
     /// <summary>
-    /// 캐릭터 머리 위 말풍선 (Screen Space - Overlay 기반).
+    /// 캐릭터 머리 위 말풍선 (Screen Space - Overlay).
     ///
-    /// 렌더 정책:
-    ///  - World Space Canvas 를 쓰지 않는 이유: URP Render Scale 변경에 영향받기 때문.
-    ///  - Overlay Canvas 는 렌더 타겟 독립. LateUpdate 에서 월드 타겟을 WorldToScreenPoint 로
-    ///    스크린 좌표로 바꿔 RectTransform.position 에 찍음 → 카메라를 따라다니는 "빌보드" 효과 자동.
-    ///
-    /// 외형:
-    ///  - 본체: 9-slice 라운디드 사각형 (SpeechBubbleSpriteFactory 프로시저 생성)
-    ///  - 꼬리: 본체 하단 중앙에서 아래로 뾰족한 삼각형 (pivot = (0.5, 1))
-    ///
-    /// 동작:
-    ///  - 타이핑: uGUI Text.text.Substring 방식 (한글 포함 모든 유니코드 OK)
-    ///  - 소멸 정책: <see cref="BubbleDismissMode"/>
-    ///  - 동시성 정책: <see cref="BubbleConcurrencyMode"/>
-    ///
-    /// 생성:
-    ///  (A) Inspector 에 직접 배치 (Canvas 자식으로 본체/꼬리/텍스트 구성 후 레퍼런스 드래그)
-    ///  (B) <see cref="Create"/> 정적 팩토리로 한 줄에 생성.
+    /// 특성:
+    ///  - 반응형 크기: 타이핑이 진행될 때마다 Text preferred 크기에 맞춰 Body 가 자라고,
+    ///    maxTextWidth 를 넘으면 자동으로 wrap 되어 세로로 늘어난다.
+    ///  - 스크린 엣지 클램프 + 꼬리 보정: 본체는 화면 밖으로 삐져나가지 않도록 margin 안쪽으로
+    ///    이동하고, 꼬리는 반대 방향으로 anchoredPosition.x 를 이동시켜 여전히 타겟을 가리킨다.
+    ///  - 말랑함: 등장 시 back-ease overshoot, 사라질 때 ease-in collapse, 타이핑 시 미세 pulse.
     /// </summary>
     [DisallowMultipleComponent]
     public class SpeechBubble : MonoBehaviour
     {
         // ───── 추적 타겟 ─────
         [Header("Target (World)")]
-        [Tooltip("말풍선이 따라붙을 월드 트랜스폼. null 이면 transform.position 고정.")]
         [SerializeField] private Transform _target;
-        [Tooltip("타겟 피벗 기준 월드 오프셋 (보통 Y = 캐릭터 머리 위).")]
         [SerializeField] private Vector3 _worldOffset = new Vector3(0f, 2f, 0f);
-        [Tooltip("비우면 UnityCamera.main 자동 캐시.")]
         [SerializeField] private UnityCamera _camera;
-        [Tooltip("타겟이 카메라 뒤로 갔을 때 말풍선을 숨길지.")]
         [SerializeField] private bool _hideWhenBehindCamera = true;
 
         // ───── 시각 참조 ─────
@@ -50,6 +34,7 @@ namespace Proto.UI.Speech
         [SerializeField] private Image _bodyImage;
         [SerializeField] private Image _tailImage;
         [SerializeField] private Text _text;
+        [SerializeField] private RectTransform _textRect;
 
         // ───── 외형 ─────
         [Header("Appearance")]
@@ -58,8 +43,13 @@ namespace Proto.UI.Speech
         [SerializeField, Min(16)] private int _roundedTextureSize = 64;
         [SerializeField, Min(0)] private int _cornerRadius = 16;
         [SerializeField] private Vector2 _tailSize = new Vector2(20f, 14f);
-        [Tooltip("꼬리 anchoredPosition.y (본체 하단 중앙 기준, 보통 0).")]
-        [SerializeField] private float _tailAnchoredY = 0f;
+        [Tooltip("본체 텍스트 주변 여백 (좌우, 상하).")]
+        [SerializeField] private Vector2 _padding = new Vector2(16f, 10f);
+        [Tooltip("텍스트가 이 값을 넘으면 자동 줄바꿈 후 세로 확장.")]
+        [SerializeField, Min(50f)] private float _maxTextWidth = 360f;
+        [SerializeField, Min(16f)] private float _minBodyWidth = 80f;
+        [SerializeField, Min(16f)] private float _minBodyHeight = 40f;
+        [SerializeField, Min(0f)] private float _screenEdgeMargin = 16f;
 
         // ───── 타이핑 ─────
         [Header("Typing")]
@@ -71,11 +61,29 @@ namespace Proto.UI.Speech
         [SerializeField, Min(0f)] private float _defaultHoldSeconds = 2f;
         [SerializeField] private BubbleConcurrencyMode _concurrencyMode = BubbleConcurrencyMode.Overwrite;
 
+        // ───── 말랑 애니 ─────
+        [Header("Jiggle")]
+        [SerializeField, Min(0.05f)] private float _popInDuration = 0.24f;
+        [SerializeField, Min(0.05f)] private float _popOutDuration = 0.14f;
+        [Tooltip("등장 back-ease overshoot 강도.")]
+        [SerializeField, Min(0f)] private float _popOvershoot = 1.7f;
+        [Tooltip("타이핑 한 글자당 스케일 kick 량.")]
+        [SerializeField, Min(0f)] private float _typePulseKick = 0.035f;
+        [Tooltip("pulse 감쇠 속도 (1/sec).")]
+        [SerializeField, Min(0.1f)] private float _typePulseDecay = 4f;
+        [Tooltip("pulse 누적 상한.")]
+        [SerializeField, Min(0.01f)] private float _typePulseMax = 0.16f;
+
         // ───── 내부 상태 ─────
         private Coroutine _routine;
+        private Coroutine _popRoutine;
         private readonly Queue<PendingLine> _pending = new();
         private bool _isSpeaking;
         private string _appendBuffer = string.Empty;
+
+        // 말랑 애니 레이어: base(pop-in/out) + pulse(typing)
+        private float _baseScale = 1f;
+        private float _pulseScale;
 
         private readonly struct PendingLine
         {
@@ -85,7 +93,6 @@ namespace Proto.UI.Speech
             public PendingLine(string t, BubbleDismissMode m, float h) { Text = t; Mode = m; Hold = h; }
         }
 
-        // ───── 공개 프로퍼티 ─────
         public bool IsSpeaking => _isSpeaking;
         public BubbleConcurrencyMode ConcurrencyMode { get => _concurrencyMode; set => _concurrencyMode = value; }
 
@@ -121,12 +128,17 @@ namespace Proto.UI.Speech
                     _bodyRect.gameObject.SetActive(false);
                 return;
             }
-            // 카메라 뒤에서 앞으로 돌아왔고 아직 말하는 중이면 복구
             if (_bodyRect != null && _isSpeaking && !_bodyRect.gameObject.activeSelf)
                 _bodyRect.gameObject.SetActive(true);
 
-            // Screen Space - Overlay 기준: transform.position 을 픽셀 좌표로 직접 세팅
             transform.position = new Vector3(sp.x, sp.y, 0f);
+
+            ApplyScreenEdgeClamp();
+
+            // 매 프레임 pulse 감쇠 후 최종 스케일 합성.
+            _pulseScale = Mathf.Max(0f, _pulseScale - _typePulseDecay * Time.deltaTime);
+            if (_bodyRect != null)
+                _bodyRect.localScale = Vector3.one * (_baseScale + _pulseScale);
         }
 
         // ───── 공개 API ─────
@@ -175,10 +187,12 @@ namespace Proto.UI.Speech
             _pending.Clear();
             _appendBuffer = string.Empty;
             _isSpeaking = false;
-            if (_bodyRect != null) _bodyRect.gameObject.SetActive(false);
+            if (_bodyRect == null) return;
+            if (!_bodyRect.gameObject.activeSelf) return;
+            if (_popRoutine != null) StopCoroutine(_popRoutine);
+            _popRoutine = StartCoroutine(PopOut());
         }
 
-        /// <summary>런타임 폰트 교체.</summary>
         public void SetFont(Font font)
         {
             if (_text != null && font != null) _text.font = font;
@@ -203,6 +217,11 @@ namespace Proto.UI.Speech
             _isSpeaking = true;
             if (_bodyRect != null) _bodyRect.gameObject.SetActive(true);
             if (_text != null) _text.text = string.Empty;
+            UpdateBubbleSize();
+
+            // Pop-in 말랑 등장
+            if (_popRoutine != null) StopCoroutine(_popRoutine);
+            _popRoutine = StartCoroutine(PopIn());
 
             string full = text ?? string.Empty;
             float timer = 0f;
@@ -216,9 +235,11 @@ namespace Proto.UI.Speech
                 {
                     shown = targetChars;
                     if (_text != null) _text.text = full.Substring(0, shown);
+                    UpdateBubbleSize();
+                    // 새 글자마다 살짝 움찔.
+                    _pulseScale = Mathf.Min(_pulseScale + _typePulseKick, _typePulseMax);
                 }
 
-                // Append 모드: 타이핑 도중 들어온 추가 텍스트를 full 에 병합
                 if (_appendBuffer.Length > 0)
                 {
                     full += _appendBuffer;
@@ -229,13 +250,12 @@ namespace Proto.UI.Speech
                 yield return null;
             }
 
-            // 타이핑 완료
             if (mode == BubbleDismissMode.AutoHide)
             {
                 if (hold > 0f) yield return new WaitForSeconds(hold);
-                if (_bodyRect != null) _bodyRect.gameObject.SetActive(false);
+                if (_popRoutine != null) StopCoroutine(_popRoutine);
+                _popRoutine = StartCoroutine(PopOut());
             }
-            // Manual: 그대로 유지. HideOnNext: 유지되다 다음 Show 가 교체.
 
             _isSpeaking = false;
             _routine = null;
@@ -244,9 +264,104 @@ namespace Proto.UI.Speech
                 ProcessNext();
         }
 
-        // idempotent: 레퍼런스가 없으면 skip, sprite 가 이미 있으면 재생성 안 함.
-        // AddComponent 시점에 Awake 가 즉시 호출되어도(= 아직 레퍼런스 null)
-        // Create() 가 레퍼런스 할당 후 다시 불러 복구할 수 있도록 래치 제거.
+        private IEnumerator PopIn()
+        {
+            _baseScale = 0.4f;
+            float t = 0f;
+            while (t < _popInDuration)
+            {
+                t += Time.deltaTime;
+                float k = Mathf.Clamp01(t / _popInDuration);
+                _baseScale = Mathf.Lerp(0.4f, 1f, EaseOutBack(k, _popOvershoot));
+                yield return null;
+            }
+            _baseScale = 1f;
+            _popRoutine = null;
+        }
+
+        private IEnumerator PopOut()
+        {
+            float start = _baseScale;
+            float t = 0f;
+            while (t < _popOutDuration)
+            {
+                t += Time.deltaTime;
+                float k = Mathf.Clamp01(t / _popOutDuration);
+                _baseScale = Mathf.Lerp(start, 0f, k * k);
+                yield return null;
+            }
+            _baseScale = 1f;
+            _pulseScale = 0f;
+            if (_bodyRect != null) _bodyRect.gameObject.SetActive(false);
+            _popRoutine = null;
+        }
+
+        private static float EaseOutBack(float x, float c1)
+        {
+            float c3 = c1 + 1f;
+            float xm1 = x - 1f;
+            return 1f + c3 * xm1 * xm1 * xm1 + c1 * xm1 * xm1;
+        }
+
+        /// <summary>현재 Text.text 에 맞춰 Body 크기 재계산. 필요 시 wrap 모드 전환.</summary>
+        private void UpdateBubbleSize()
+        {
+            if (_text == null || _bodyRect == null || _textRect == null) return;
+
+            _text.horizontalOverflow = HorizontalWrapMode.Overflow;
+            _text.verticalOverflow = VerticalWrapMode.Overflow;
+
+            float naturalW = _text.preferredWidth;
+            float usedW, usedH;
+
+            if (naturalW > _maxTextWidth)
+            {
+                _text.horizontalOverflow = HorizontalWrapMode.Wrap;
+                // Wrap 시 preferredHeight 는 sizeDelta.x 에 의존하므로 먼저 폭을 고정.
+                _textRect.sizeDelta = new Vector2(_maxTextWidth, _textRect.sizeDelta.y);
+                usedW = _maxTextWidth;
+                usedH = _text.preferredHeight;
+            }
+            else
+            {
+                usedW = naturalW;
+                usedH = _text.preferredHeight;
+            }
+
+            _textRect.sizeDelta = new Vector2(usedW, usedH);
+
+            float bw = Mathf.Max(_minBodyWidth, usedW + _padding.x * 2f);
+            float bh = Mathf.Max(_minBodyHeight, usedH + _padding.y * 2f);
+            _bodyRect.sizeDelta = new Vector2(bw, bh);
+        }
+
+        /// <summary>화면 가장자리에서 본체를 안쪽으로 밀고, 꼬리는 반대방향으로 이동시켜 여전히 타겟을 가리키게.</summary>
+        private void ApplyScreenEdgeClamp()
+        {
+            if (_bodyRect == null) return;
+
+            float bw = _bodyRect.rect.width;
+            float sw = Screen.width;
+            float m = _screenEdgeMargin;
+            float rootX = transform.position.x;
+            float minX = rootX - bw * 0.5f;
+            float maxX = rootX + bw * 0.5f;
+
+            float offsetX = 0f;
+            if (minX < m) offsetX = m - minX;
+            else if (maxX > sw - m) offsetX = (sw - m) - maxX;
+
+            _bodyRect.anchoredPosition = new Vector2(offsetX, _tailSize.y);
+
+            if (_tailImage != null)
+            {
+                var rt = _tailImage.rectTransform;
+                var ap = rt.anchoredPosition;
+                ap.x = -offsetX; // body 가 +로 이동했으면 tail 은 body local 기준 -로 보정 → 꼭짓점이 타겟 X 에 고정.
+                rt.anchoredPosition = ap;
+            }
+        }
+
         private void EnsureAppearance()
         {
             if (_bodyImage != null)
@@ -268,28 +383,25 @@ namespace Proto.UI.Speech
                 rt.sizeDelta = _tailSize;
                 rt.anchorMin = new Vector2(0.5f, 0f);
                 rt.anchorMax = new Vector2(0.5f, 0f);
-                rt.pivot     = new Vector2(0.5f, 1f); // 상단 중앙이 기준 → body 하단 중앙에 붙으면 아래로 뾰족
-                rt.anchoredPosition = new Vector2(0f, _tailAnchoredY);
+                rt.pivot     = new Vector2(0.5f, 1f); // 상단 중앙 pivot → body 하단에서 아래로 뾰족.
+                rt.anchoredPosition = Vector2.zero;
             }
             if (_text != null)
             {
                 _text.color = _textColor;
                 _text.text = string.Empty;
+                _text.alignment = TextAnchor.MiddleCenter;
+                _text.horizontalOverflow = HorizontalWrapMode.Overflow;
+                _text.verticalOverflow = VerticalWrapMode.Overflow;
             }
         }
 
         // ───── Static Factory ─────
 
-        /// <summary>
-        /// 타겟에 붙는 말풍선 GameObject 를 계층째 한 줄로 생성. Overlay Canvas 없으면 자동 생성.
-        /// font 를 넘기지 않으면 Unity 내장 LegacyRuntime (한글 미지원) 이 기본으로 들어감 —
-        /// 한글을 쓰려면 반드시 font 인자로 NotoSansKR 등을 명시할 것.
-        /// </summary>
         public static SpeechBubble Create(Transform target, Font font = null, Canvas canvasOverride = null)
         {
             var canvas = canvasOverride != null ? canvasOverride : FindOrCreateOverlayCanvas();
 
-            // ── Root (타겟 월드 → 스크린 좌표가 찍히는 지점) ──
             var rootGO = new GameObject("SpeechBubble", typeof(RectTransform));
             var rootRT = (RectTransform)rootGO.transform;
             rootRT.SetParent(canvas.transform, false);
@@ -297,57 +409,54 @@ namespace Proto.UI.Speech
             rootRT.pivot = new Vector2(0.5f, 0f);
             rootRT.sizeDelta = Vector2.zero;
 
-            // ── Body (9-slice 라운디드) ──
             var bodyGO = new GameObject("Body",
                 typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
             var bodyRT = (RectTransform)bodyGO.transform;
             bodyRT.SetParent(rootRT, false);
             bodyRT.anchorMin = bodyRT.anchorMax = new Vector2(0.5f, 0f);
-            bodyRT.pivot = new Vector2(0.5f, 0f); // 바닥 중앙이 root 와 맞물림
-            bodyRT.sizeDelta = new Vector2(240f, 72f);
+            bodyRT.pivot = new Vector2(0.5f, 0f);
+            bodyRT.sizeDelta = new Vector2(160f, 56f);
 
             var bodyImg = bodyGO.GetComponent<Image>();
             bodyImg.raycastTarget = false;
 
-            // ── Tail (Body 하단 중앙 자식) ──
             var tailGO = new GameObject("Tail",
                 typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
             tailGO.transform.SetParent(bodyRT, false);
             var tailImg = tailGO.GetComponent<Image>();
             tailImg.raycastTarget = false;
 
-            // ── Text (Body 자식, 안쪽 패딩) ──
+            // Text 는 center-pivot 수동 제어 (stretch 안 씀 → UpdateBubbleSize 에서 폭/높이 직접 세팅).
             var textGO = new GameObject("Text",
                 typeof(RectTransform), typeof(CanvasRenderer), typeof(Text));
             var textRT = (RectTransform)textGO.transform;
             textRT.SetParent(bodyRT, false);
-            textRT.anchorMin = new Vector2(0f, 0f);
-            textRT.anchorMax = new Vector2(1f, 1f);
-            textRT.offsetMin = new Vector2(14f, 10f);
-            textRT.offsetMax = new Vector2(-14f, -10f);
+            textRT.anchorMin = new Vector2(0.5f, 0.5f);
+            textRT.anchorMax = new Vector2(0.5f, 0.5f);
+            textRT.pivot = new Vector2(0.5f, 0.5f);
+            textRT.anchoredPosition = Vector2.zero;
+            textRT.sizeDelta = new Vector2(100f, 28f);
 
             var txt = textGO.GetComponent<Text>();
             txt.alignment = TextAnchor.MiddleCenter;
-            txt.horizontalOverflow = HorizontalWrapMode.Wrap;
+            txt.horizontalOverflow = HorizontalWrapMode.Overflow;
             txt.verticalOverflow = VerticalWrapMode.Overflow;
             txt.fontSize = 20;
             txt.raycastTarget = false;
             txt.font = font != null ? font : Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
 
-            // ── SpeechBubble 컴포넌트 ──
             var sb = rootGO.AddComponent<SpeechBubble>();
             sb._bodyRect = bodyRT;
             sb._bodyImage = bodyImg;
             sb._tailImage = tailImg;
             sb._text = txt;
+            sb._textRect = textRT;
             sb._target = target;
             sb._camera = UnityCamera.main;
             sb.EnsureAppearance();
+            sb.UpdateBubbleSize();
 
-            // 꼬리 길이만큼 body 를 위로 밀어 꼬리 끝(타겟 포인트) 이 root 위치와 맞물리게
             bodyRT.anchoredPosition = new Vector2(0f, sb._tailSize.y);
-
-            // Show() 호출 전엔 빈 말풍선이 드러나지 않도록 기본 Hide.
             bodyRT.gameObject.SetActive(false);
 
             return sb;
