@@ -3,7 +3,8 @@
     "rootNamespace": "Proto.EditorTools",
     "references": [
         "Proto",
-        "Unity.TextMeshPro"
+        "Unity.TextMeshPro",
+        "Unity.ugui"
     ],
     "includePlatforms": [
         "Editor"
