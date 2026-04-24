@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Proto.TD.Sim;
+using Proto.Shared;
 
 namespace Proto.TD.Level
 {

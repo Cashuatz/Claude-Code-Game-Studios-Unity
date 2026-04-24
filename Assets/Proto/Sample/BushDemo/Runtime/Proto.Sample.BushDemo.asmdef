@@ -1,0 +1,16 @@
+{
+    "name": "Proto.Sample.BushDemo",
+    "rootNamespace": "Proto.Environment.Bush",
+    "references": [
+        "Proto"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

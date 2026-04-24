@@ -1,8 +1,8 @@
 using NUnit.Framework;
 using Proto.Stage.PCG.Wfc;
+using Proto.Shared;
 using Proto.TD.Level;
 using Proto.TD.Level.Wfc;
-using Proto.TD.Sim;
 
 namespace Proto.Tests.Wfc
 {

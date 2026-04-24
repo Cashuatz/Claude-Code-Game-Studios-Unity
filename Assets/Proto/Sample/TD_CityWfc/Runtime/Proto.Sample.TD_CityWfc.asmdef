@@ -1,0 +1,16 @@
+{
+    "name": "Proto.Sample.TD_CityWfc",
+    "rootNamespace": "Proto.TD",
+    "references": [
+        "Proto"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

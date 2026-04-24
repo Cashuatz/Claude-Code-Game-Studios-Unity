@@ -3,6 +3,7 @@
     "rootNamespace": "Proto.Tests",
     "references": [
         "Proto",
+        "Proto.Sample.TD_CityWfc",
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner"
     ],

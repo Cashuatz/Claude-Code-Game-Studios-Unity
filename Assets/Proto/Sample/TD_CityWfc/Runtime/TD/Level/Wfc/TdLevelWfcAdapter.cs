@@ -21,7 +21,7 @@ namespace Proto.TD.Level.Wfc
     /// - PROP-2026-04-24-001 / OR-P-006: "시가지 도메인 다양성은 영역 구조 레벨"
     ///   단독 WFC v1 은 로컬 인접 규칙만으로 블록 격자를 창발시키지 못해 OR-08 REJECTED.
     ///   하이브리드는 블록 구조를 1차 결정하고 WFC 는 인접 검증자로 남긴다.
-    /// - HR-TD-2: 모든 RNG 는 Xorshift64 <see cref="Proto.TD.Sim.Rng"/>.
+    /// - HR-TD-2: 모든 RNG 는 Xorshift64 <see cref="Proto.Shared.Rng"/>.
     /// - HR-TD-5: 경로는 사전 정의(고정). A* 결과 waypoint 를 경로로 기록.
     /// - 좌표: (x=0 y=0) grid 좌하단, y 증가 = 북 (Unity world z+).
     ///

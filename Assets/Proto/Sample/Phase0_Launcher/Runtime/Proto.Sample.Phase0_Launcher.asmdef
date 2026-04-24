@@ -1,0 +1,19 @@
+{
+    "name": "Proto.Sample.Phase0_Launcher",
+    "rootNamespace": "Proto.Launcher",
+    "references": [
+        "Proto",
+        "Unity.InputSystem",
+        "Unity.TextMeshPro",
+        "Unity.ugui"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
