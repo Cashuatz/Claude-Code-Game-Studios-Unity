@@ -36,7 +36,7 @@
 | 장르 | 카탈로그 | 질문지 | 컨벤션 | 개별 모듈 문서 |
 |---|---|---|---|---|
 | `turn3d` | `_catalog-turn3d.md` ✅ | `_questionnaire-turn3d.md` ✅ | `_conventions.md` (공통) | 9/16 완료 (기존) — 7개 미작성 |
-| `td` | `_catalog-td.md` ✅ | `_questionnaire-td.md` ✅ | `_conventions-td.md` ✅ | 36/36 완료 ✅ |
+| `td` | `_catalog-td.md` ✅ | `_questionnaire-td.md` ✅ | `_conventions-td.md` ✅ | 37/37 완료 ✅ (+ `stage-pcg-wfc` 추가 2026-04-24) |
 | `rail-shooter` | `_catalog-rail-shooter.md` ✅ | `_questionnaire-rail-shooter.md` ✅ | `_conventions-rail-shooter.md` ✅ | 0/47 **미작성** |
 
 ### 2.3 공유 모듈 개별 문서
@@ -57,6 +57,7 @@
 | `save-kit.md` | ✅ (신규) |
 | `shader-fx-kit.md` | ✅ (신규) |
 | `post-process-kit.md` | ✅ (신규) |
+| `stage-pcg-wfc.md` | ✅ (2026-04-24, 장르 중립 WFC 솔버, TD Q7 연계) |
 
 ### 2.4 TD 개별 모듈 문서 (36/36 완료)
 
@@ -164,8 +165,9 @@ Phase 4 는 현재도 generic WASD 컨트롤러만 작성됨.
 ### 6.2 중기 (실제 구현)
 
 - [ ] TD 모듈 실제 Unity 구현 — 스킬 `/proto-td-*` 작성
+- [ ] **`stage-pcg-wfc` 실 구현** — 솔버 코어 + `WfcTileSO` / `WfcTileSetSO` + 기본 타일셋 12종 + `TdLevelWfcAdapter`. `td-level-template-*` 의 JSON 생성 스텝이 본 모듈로 연결됨.
 - [ ] TD 웹 시뮬레이터 (`web-sim/`) 실 구현 — TS 코어 + 레벨 에디터 + Monte Carlo 러너
-- [ ] JSON 스키마 초안 (`level.schema.json`, `wave.schema.json`, `tower.schema.json`, `enemy.schema.json`)
+- [ ] JSON 스키마 초안 (`level.schema.json`, `wave.schema.json`, `tower.schema.json`, `enemy.schema.json`) — **`stage-pcg-wfc` 의 JSON 출력이 `level.schema.json` 초안 1차 레퍼런스**
 - [ ] Rail Shooter 모듈 실제 Unity 구현
 - [ ] turn3d 모듈 실제 Unity 구현
 
