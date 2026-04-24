@@ -1,6 +1,6 @@
 # Proto Genres — Index & Router
 
-> 수강생이 `/proto-start` 에서 한 문장 아이디어를 말하면, Claude 는 이 문서를
+> 수강생이 첫 메시지에 한 문장 아이디어를 말하면, Claude 는 이 문서를
 > 참조해 **어느 장르 번들로 진입할지** 먼저 결정한다. 장르가 정해지면 그 장르의
 > `_questionnaire-<genre>.md` 로 이동하여 세부 질문을 시작한다.
 >

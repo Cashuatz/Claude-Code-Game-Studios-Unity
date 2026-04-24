@@ -51,6 +51,8 @@ dist/
 
 # === Engine: Unity ===
 [Aa]ssets/ScreenShots/
+[Aa]ssets/Screenshots/
+[Aa]ssets/_Recovery/
 [Ll]ibrary/
 [Tt]emp/
 [Oo]bj/
@@ -138,3 +140,6 @@ $RECYCLE.BIN/
 
 # Proto: .claude/ 수정용 staging 경로 (mv 로 배포 후 흔적 제거)
 .stage/
+
+# Proto: worktree 런타임 디렉토리 (레포에 커밋하지 않음)
+.claude/worktrees/

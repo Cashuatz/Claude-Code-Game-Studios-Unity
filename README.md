@@ -6,7 +6,7 @@
 ## 바로 시작
 
 1. Claude Code에서 이 프로젝트를 엽니다.
-2. `/proto-start` 입력 후 한 문장으로 아이디어를 말합니다.
+2. **첫 메시지에 한 문장으로 아이디어를 말합니다** — 예: "좀비 피해서 3분 버티는 게임". Claude 가 바로 받아 컨셉 정리와 시작 스크립트까지 만듭니다.
 3. Unity Hub에서 이 프로젝트를 열고 **Play** 버튼을 누릅니다.
 
 전체 가이드: [`docs/PROTO-QUICKSTART.ko.md`](docs/PROTO-QUICKSTART.ko.md)

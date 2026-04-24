@@ -13,7 +13,8 @@ case "$BRANCH" in
         if [ "$BRANCH" = "Proto" ] || [ "${BRANCH#Proto/}" != "$BRANCH" ]; then
             echo "=== Proto 브랜치 — 프로토타이핑 경량 모드 (URP 3D) ==="
             echo ""
-            echo "시작: /proto-start 입력 후 한 문장으로 아이디어 말하기"
+            echo "시작: 첫 메시지에 한 문장으로 아이디어를 말씀하세요"
+            echo "      예: \"좀비 피해서 3분 버티는 게임\""
             echo "가이드: docs/PROTO-QUICKSTART.ko.md"
             echo ""
             echo "목표: 20시간 / 3분 플레이 빌드"

@@ -66,6 +66,23 @@ Scope: This project only
 | **Limitations** | EditMode ≠ 라이프사이클 실행, PlayMode는 느리고 비결정적, 테스트 미존재 시 불가 |
 | **Connected FT** | FT-10 (Metamorphic Failure), FT-05 (Execution Failure) |
 
+### OR-P-006: PCG Domain Rule Oracle (PCG 도메인 룰 오라클)
+
+| 항목 | 내용 |
+|------|------|
+| **Overlay Of** | OR-01 (Spec Oracle) |
+| **Definition** | 절차 생성(PCG) 모듈이 **도메인 고유의 암묵적 배치 규칙**을 준수하는지 판정한다. 배치 규칙은 현실성(시가지/던전/숲 등) 또는 게임 레벨 디자인 의도 (플레이어 동선, 전투 공간, 시야)로부터 유래한다. |
+| **When to Use** | 1. 새 PCG 모듈 설계 초기 — "다양성을 어느 축에서 주입할지" 결정 전. 2. 시각 판정(OR-08)이 REJECTED 된 후 원인 축을 분류할 때. 3. PCG 결과가 수치 오라클은 통과했으나 도메인 위화감을 주는 경우. |
+| **Limitations** | 1. 도메인 룰이 프로젝트별로 다르므로 매번 명세 필요. 2. "현실성" vs "게임 디자인 의도" 충돌 시 OR-08 에스컬레이션 필요. |
+| **Connected FT** | FT-02 (Hidden Semantic Rule Misfill), FT-01 (Spec Gap) |
+
+**사용 예 — 시가지 PCG 도메인 룰**:
+- 건물은 도로 축에 정렬 (yaw jitter 금지)
+- 다양성 축은: 도로 위계 / 간격 / 끊긴 길 / 광장 (영역 구조 레벨에서 찾는다)
+- 건물 회전·형태 무작위화로 "다양성 부족" 을 해결하려 하면 FT-02 혐의
+
+**Promoted from**: PROP-2026-04-24-001 (Approved 2026-04-24).
+
 ---
 
 ## Oracle Selection Guide
@@ -77,3 +94,4 @@ Scope: This project only
 | C# 코드 수정 후 | OR-P-004 (Compilation) | OR-P-005 (Test) | OR-03 (Execution) |
 | 성능 최적화 후 | OR-P-002 (Profiler) | OR-P-001 (Play Mode) | OR-05 (Comparison) |
 | 물리 시스템 수정 후 | OR-P-001 (Play Mode) | OR-P-002 (Profiler) | OR-06 (Metamorphic) |
+| PCG 모듈 설계 / 다양성 판정 | OR-P-006 (PCG Domain Rule) | OR-08 (Human) | OR-06 (Metamorphic) |

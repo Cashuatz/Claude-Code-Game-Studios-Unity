@@ -9,7 +9,7 @@ Claude Code는 `.claude/skills/*/SKILL.md` 패턴만 스캔하므로, 이 하위
 - **개별 복원**: `git mv .claude/skills/_hidden/<name> .claude/skills/<name>`
 - **전체 복원 (main 머지)**: `main` 브랜치로 전환하면 이 이동이 적용되지 않아 모든 스킬이 다시 활성화됩니다.
 
-## Proto에서 노출된 스킬 (11개 + /proto-start)
+## Proto에서 노출된 스킬 (11개)
 
 - `brainstorm` — 게임 컨셉 아이디어 발굴
 - `codex` — 교차 검증
@@ -22,7 +22,12 @@ Claude Code는 `.claude/skills/*/SKILL.md` 패턴만 스캔하므로, 이 하위
 - `smoke-check` — 기본 작동 확인
 - `unity-mcp` — Unity MCP 도구 안내
 - `verify` — VKL 검증 루프 (의미 검증이 필요할 때)
-- `proto-start` *(Proto 신규)* — 프로토타이핑 진입점
+
+**진입 방법**: Proto 브랜치는 전용 진입 스킬 없이 동작한다.
+수강생이 첫 메시지에 한 문장 아이디어를 말하면 Claude 가 바로 받아
+`design/proto-concept.md` 생성 → 시작 스크립트까지 진행한다.
+(초기 버전에는 `/proto-start` 진입 스킬이 있었으나 장르 라우팅·PlayerController
+샘플·자동 push 가 최신 규칙과 어긋나 제거됨.)
 
 ## 왜 숨겼는가
 

@@ -115,25 +115,18 @@ dof.focusDistance.Override(worldDistance);   // 이 프레임만, 이 카메라�
 
 ## 4. 커스텀 PP 패스로 확장
 
-레퍼런스 코드는 Execute 가 VolumeStack 수정만 하지만, **풀스크린 삼각형 드로우** 를 추가하면 실제 PP 패스가 된다:
+레퍼런스 코드는 Execute 가 VolumeStack 수정만 하지만, **풀스크린 삼각형 드로우** 를 추가하면 실제 PP 패스가 된다. 풀스크린 삼각형은 2가지 방식 중 하나로 구현한다.
+
+### 4a. Procedural Vertex 방식 (Mesh 없음)
+
+`cmd.DrawProcedural` 로 3-vertex 삼각형을 즉석 생성. Mesh 에셋을 만들지 않아 가장 가볍지만, VS 에 `SV_VertexID` 입력 필요 → RenderGraph 래스터 패스나 Mesh 중심 워크플로에선 호환성이 떨어질 수 있다.
 
 ```csharp
-public override void Execute(ScriptableRenderContext ctx, ref RenderingData data)
-{
-    var cmd = CommandBufferPool.Get("MyCustomPP");
-
-    // 1) 카메라 컬러 타겟으로 설정
-    cmd.SetRenderTarget(data.cameraData.renderer.cameraColorTargetHandle);
-
-    // 2) 풀스크린 삼각형 드로우 — vertex 3 개, procedural
-    cmd.DrawProcedural(Matrix4x4.identity, _myMaterial, 0, MeshTopology.Triangles, 3, 1);
-
-    ctx.ExecuteCommandBuffer(cmd);
-    CommandBufferPool.Release(cmd);
-}
+// Compat Execute 시그니처 기준
+cmd.SetRenderTarget(data.cameraData.renderer.cameraColorTargetHandle);
+cmd.DrawProcedural(Matrix4x4.identity, _myMaterial, 0, MeshTopology.Triangles, 3, 1);
 ```
 
-풀스크린 삼각형 셰이더 본문 (vertex 쪽):
 ```hlsl
 // 3-vertex 삼각형이 화면 전체를 덮음 (uv 0~1)
 Varyings vert(uint vertexID : SV_VertexID)
@@ -150,7 +143,64 @@ Varyings vert(uint vertexID : SV_VertexID)
 }
 ```
 
-그 결과 fragment 는 화면의 모든 픽셀을 순회 → **자유로운 PP** (디졸브 화면 전환, 스크린 왜곡, 커스텀 톤매핑 등).
+### 4b. Mesh 기반 방식 (정점을 clip-space 로 박아둔 Mesh)
+
+실제 Unity `Mesh` 오브젝트를 한 번 만들어 재사용. 정점을 이미 clip-space 좌표 `(-1,-1) / (-1,3) / (3,-1)` 로 지정해두고, VS 는 어떤 변환도 하지 않고 그대로 통과시킨다. `cmd.DrawMesh` 와 `MaterialPropertyBlock`, URP 17 Render Graph `RasterCommandBuffer` 모두 호환.
+
+```csharp
+public static class FullscreenTriangle
+{
+    private static Mesh _cached;
+    public static Mesh Get()
+    {
+        if (_cached != null) return _cached;
+        _cached = new Mesh { name = "FullscreenTriangle" };
+        _cached.hideFlags = HideFlags.HideAndDontSave;
+        _cached.SetVertices(new[] {
+            new Vector3(-1f, -1f, 0f),
+            new Vector3(-1f,  3f, 0f),
+            new Vector3( 3f, -1f, 0f),
+        });
+        _cached.SetUVs(0, new[] {
+            new Vector2(0f, 0f), new Vector2(0f, 2f), new Vector2(2f, 0f),
+        });
+        _cached.SetIndices(new[] { 0, 1, 2 }, MeshTopology.Triangles, 0, false);
+        _cached.bounds = new Bounds(Vector3.zero, new Vector3(1e6f, 1e6f, 0f));
+        _cached.UploadMeshData(true);
+        return _cached;
+    }
+}
+```
+
+```hlsl
+Varyings Vert(Attributes IN)
+{
+    Varyings OUT;
+    // 핵심: 변환 없음 — Mesh 의 정점이 이미 clip-space 좌표
+    OUT.positionCS = float4(IN.positionOS.xy, 0.0, 1.0);
+    OUT.uv = IN.uv;
+    // D3D/Metal/Vulkan/Console 등 top-left origin RT 는 y 보정 필요
+    #if defined(SHADER_API_D3D11) || defined(SHADER_API_D3D12) || \
+        defined(SHADER_API_METAL) || defined(SHADER_API_VULKAN) || \
+        defined(SHADER_API_XBOXONE) || defined(SHADER_API_GAMECORE) || \
+        defined(SHADER_API_PS4) || defined(SHADER_API_PS5) || \
+        defined(SHADER_API_SWITCH)
+        OUT.uv.y = 1.0 - OUT.uv.y;
+    #endif
+    return OUT;
+}
+```
+
+URP 17 Render Graph 에서 소스 텍스처 샘플링이 필요할 때 (예: `_BlitTexture`) 는:
+1. `builder.AllowGlobalStateModification(true)` 허용 후 `ctx.cmd.SetGlobalTexture(id, source)` + `ctx.cmd.DrawMesh(mesh, Matrix4x4.identity, material, 0, 0)` 조합.
+2. 같은 RT 를 read+write 하면 안 되므로 CameraColor 를 `Blitter.BlitTexture` 로 temp RT 에 먼저 복사해 둔다 (2-pass: copy → custom draw).
+
+이 저장소에 실제 작동 샘플이 있다:
+- `Assets/Proto/Runtime/Rendering/FullscreenTriangle.cs` (factory)
+- `Assets/Proto/Runtime/Rendering/FullscreenSample.shader` (채도↓ + 비네트 + 스캔라인)
+- `Assets/Proto/Runtime/Rendering/FullscreenSampleFeature.cs` (URP 17 RG 2-pass 피처)
+
+두 방식 중 무엇을 쓰든 결과는 같다 — **fragment 가 화면의 모든 픽셀을 순회** → **자유로운 PP** (디졸브 화면 전환, 스크린 왜곡, 커스텀 톤매핑 등).
 
 ## 5. Proto 하드룰 (이 패턴 사용 시)
 

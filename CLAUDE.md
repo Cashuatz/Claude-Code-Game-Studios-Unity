@@ -17,8 +17,8 @@
 
 사용자(프로토타이핑 대상자)에게는 딱 두 가지만 기억시킵니다:
 
-1. `/proto-start` 입력 → 한 문장으로 아이디어 설명
-2. Unity에서 Play 버튼 클릭
+1. **첫 메시지에 한 문장으로 아이디어 말하기** — 예: "좀비 피해서 3분 버티는 게임". 별도 명령이나 슬래시 스킬 없음. Claude 가 바로 받아 컨셉 정리 → 시작 스크립트까지 진행합니다.
+2. Unity에서 Play 버튼 클릭.
 
 세부 가이드는 `docs/PROTO-QUICKSTART.ko.md` 참조.
 
@@ -32,15 +32,15 @@
 - 예: "플레이어 컨트롤러를 `Assets/Scripts/Proto/PlayerController.cs`에 작성합니다." → 즉시 Write.
 - **예외 (항상 승인받기)**: 파일 삭제, `git reset --hard`, 다른 브랜치 체크아웃, `main` 수정 시도.
 
-### 2. Git — Claude가 완전 대행
+### 2. Git — Claude가 로컬까지 대행
 - 사용자에게 **Git 개념·명령·GUI를 노출하지 않습니다**.
 - 매 의미 단위 작업 종료 시 Claude가 다음을 자동 실행:
   ```
   git add <변경된 파일>
   git commit -m "<한글 메시지>"
-  git push origin Proto
   ```
 - 커밋 메시지는 **한글**, 형식은 자유 (예: "추가: 점프 기능", "수정: 적이 이제 플레이어 따라감").
+- **`git push` 는 Claude 가 실행하지 않습니다** — HTTPS credential 프롬프트가 수강생 흐름을 끊기 때문. 사용자가 "푸시해줘" / "원격에 올려줘" 라고 명시 요청한 경우에만 실행.
 - `main` 병합·force-push·reset 관련 요청은 **거부**하고 사용자에게 확인.
 
 ### 3. Unity 작업 경계
@@ -50,19 +50,19 @@
 
 ### 4. 디자인 문서 — 필수 아님
 - GDD, ADR, 에픽, 스토리 파일 **모두 생략 가능**합니다.
-- 필요한 것은 딱 하나: `design/proto-concept.md` (10줄 컨셉 파일) — `/proto-start`가 자동 생성.
+- 필요한 것은 딱 하나: `design/proto-concept.md` (10줄 컨셉 파일) — 첫 대화에서 Claude 가 자동 생성. 템플릿은 `docs/templates/proto-game-concept.md`.
 
 ### 5. `.claude/` 수정 — Stage + mv 패턴 필수
 - `.claude/` 하위 파일(skills, agents, docs, settings 등)은 `Edit` / `Write` 도구로 **직접 수정 금지**.
   해당 경로 쓰기는 매번 권한 프롬프트를 띄우므로 수강생 흐름을 끊는다.
 - **정해진 워크플로**:
   1. 먼저 staging 경로에 파일을 쓴다: `.stage/claude/<원래상대경로>`
-     - 예: `.claude/skills/proto-start/SKILL.md` → `.stage/claude/skills/proto-start/SKILL.md`
+     - 예: `.claude/skills/prototype/SKILL.md` → `.stage/claude/skills/prototype/SKILL.md`
   2. `git add .stage/claude/...` 로 스테이징 (선택).
   3. Bash `mv` 한 방으로 실제 위치에 배포:
      ```bash
-     mkdir -p .claude/skills/proto-start && \
-     mv .stage/claude/skills/proto-start/SKILL.md .claude/skills/proto-start/SKILL.md
+     mkdir -p .claude/skills/prototype && \
+     mv .stage/claude/skills/prototype/SKILL.md .claude/skills/prototype/SKILL.md
      ```
   4. 커밋 시 `.claude/` 경로의 변경만 포함. `.stage/claude/` 는 `.gitignore` 로 제외 권장.
 - **예외**: 읽기 전용 조회(`Read` / `Glob` / `Grep`) 는 자유.
@@ -70,7 +70,7 @@
 
 ## 노출된 스킬·에이전트
 
-**Skills (12개)**: `proto-start`, `prototype`, `help`, `compile-check`, `smoke-check`, `brainstorm`, `codex`, `note`, `learner`, `editor-layout`, `unity-mcp`, `verify`
+**Skills (11개)**: `prototype`, `help`, `compile-check`, `smoke-check`, `brainstorm`, `codex`, `note`, `learner`, `editor-layout`, `unity-mcp`, `verify`
 
 **Agents (9개)**: `prototyper`, `unity-specialist`, `gameplay-programmer`, `ui-programmer`, `art-director`, `game-designer`, `omc-explore`, `omc-debugger`, `omc-verifier`
 
